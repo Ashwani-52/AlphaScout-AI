@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatedGridPattern } from './components/ui/animated-grid-pattern';
 import { cn } from './lib/utils';
+import Briefing from './components/Briefing';
 
 export default function App() {
   const [ticker, setTicker] = useState('');
@@ -133,15 +134,8 @@ export default function App() {
           </div>
         )}
 
-        {analysis && (
-          <div className="w-full text-left bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-4">
-              <h3 className="text-xl font-bold text-slate-900">Intelligence Briefing</h3>
-              <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-mono">COMPILED</span>
-            </div>
-            <p className="whitespace-pre-line text-slate-700 leading-relaxed font-medium">{analysis}</p>
-          </div>
-        )}
+        {/* Render the unified Price Chart, Competitor Comparison Table, and Report sections */}
+        {analysis && <Briefing result={analysis} />}
       </main>
 
       <footer className="w-full max-w-7xl mx-auto px-6 pb-6 pt-6">

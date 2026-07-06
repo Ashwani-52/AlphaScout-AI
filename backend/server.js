@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import { getStockData } from './src/services/stockService.js';
 import { getCompanyNews } from './src/services/newsService.js';
+import { runResearchAgent } from './src/agent/orchestrator.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -54,7 +55,7 @@ app.get('/api/analyze', async (req, res) => {
   const { ticker } = req.query;
 
   if (!ticker) {
-    return res.status(400).json({ error: 'Ticker is required' });
+    return res.status(400).json({ error: 'Ticker query parameter is required.' });
   }
 
   // SSE Headers setup to keep connection alive
@@ -68,28 +69,15 @@ app.get('/api/analyze', async (req, res) => {
   };
 
   try {
-    sendUpdate('step', { message: `Searching global database for ticker symbol: ${ticker.toUpperCase()}...` });
-    await new Promise(r => setTimeout(r, 1500));
+    const resultPayload = await runResearchAgent(ticker, (stepMessage) => {
+      sendUpdate('step', { message: stepMessage });
+    });
 
-    sendUpdate('step', { message: `Scanning regulatory filings, recent 10-K logs, and financial news...` });
-    await new Promise(r => setTimeout(r, 1800));
-
-    sendUpdate('step', { message: `Extracting market sentiment indices and institutional flows...` });
-    await new Promise(r => setTimeout(r, 1400));
-
-    sendUpdate('step', { message: `Feeding aggregated parameters into Hugging Face model clusters...` });
-    await new Promise(r => setTimeout(r, 2000)); 
-
-    const finalReport = `=== ALPHA SCOUT INTELLIGENCE REPORT: ${ticker.toUpperCase()} ===\n\n` +
-                        `[1] MARKET GAP ANALYSIS\n` +
-                        `The asset exhibits high liquidity backing with institutional buyers accumulating on minor pullbacks.\n\n` +
-                        `[2] VERDICT\n` +
-                        `The current technical structural matrix indicators suggest a high-probability bullish continuation layout.`;
-
-    sendUpdate('result', { report: finalReport });
+    sendUpdate('result', { report: resultPayload });
 
   } catch (error) {
-    sendUpdate('error', { message: 'Inference gateway dropped connection during execution loop.' });
+    console.error(`[Server] Analysis failed for ${ticker}:`, error);
+    sendUpdate('error', { message: error.message || 'Inference gateway dropped connection during execution loop.' });
   } finally {
     res.end();
   }

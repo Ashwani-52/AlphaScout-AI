@@ -32,3 +32,22 @@ export async function getCompanyNews(ticker) {
     throw new Error(`Google News RSS failed for '${cleanTicker}': ${error.message}`);
   }
 }
+
+/**
+ * Fetches headlines for orchestrator compatibility.
+ */
+export async function getNews(ticker) {
+  const items = await getCompanyNews(ticker);
+  // The orchestrator promptTemplate expects a plain array of headline strings!
+  // Let's check: buildReportPrompt does:
+  // sentiment.label
+  // peers.map(p => `${p.symbol}: price $${p.price}...`)
+  // Wait, does orchestrator expect getNews to return an array of strings or objects?
+  // Let's check orchestrator.js:
+  // sentiment = news.length > 0 ? await getSentiment(news) : ...
+  // and sentimentService.js:
+  // newsItems.forEach(item => { const title = (item.title || '').toLowerCase(); ... })
+  // So it expects an array of objects containing a `title` property!
+  // Our getCompanyNews returns: [{ title, pubDate }, ...] which fits perfectly!
+  return items;
+}
