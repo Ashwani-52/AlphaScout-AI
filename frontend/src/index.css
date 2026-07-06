@@ -4,153 +4,176 @@
   font-size: 0.65rem;
 }
 
-/* ==========================================
-   LIQUID GLASS BUTTON STYLES
-   ========================================== */
+/* Custom Glow Button Architecture - Tailored for AlphaScout UI */
 .btn-wrapper {
-  --rad: 32px;
-  --color-wrapper-border: rgba(255, 255, 255, 0.8);
-  --color-btn-bg: #4f46e5;
-  --color-btn-text: #000;
-  --color-btn-text-shadow: #fff;
-  --color-btn-inset-shadow: #558;
-  --color-layer-a: #fff;
-  --color-layer-b: #a855f7;
-  --color-overlay-text: #fff;
-  --color-overlay-glow: rgba(255, 255, 255, 0.4);
-  --color-overlay-shadow: rgba(0, 0, 0, 0.15);
-  --color-overlay-highlight: rgba(255, 255, 255, 0.3);
-
   position: relative;
+  display: inline-block;
+}
+
+.btn {
+  --border-radius: 38px;
+  --padding: 5px;
+  --transition: 0.4s;
+  --button-color: #11131c; /* Balanced Deep Indigo Obsidian Core */
+  --highlight-color-hue: 265deg; /* Synced Purple Neon Wave Emission Line */
+
+  user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: clip;
-  overflow-clip-margin: 4px;
-  border: 2px solid var(--color-wrapper-border);
-  border-radius: var(--rad);
+  padding: 0.8rem 1.4rem 0.8rem 1.2rem;
   font-family: "Inter", sans-serif;
+  font-size: 0.875rem;
   font-weight: 600;
-  filter: saturate(1.1) brightness(1.1);
-  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.3);
-  transition: all 0.3s ease;
-}
-
-.gradient-btn {
-  position: relative;
-  z-index: -1;
-  padding: 14px 40px;
-  border: none;
-  border-radius: var(--rad);
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: 0.15rem;
-  color: var(--color-btn-text);
-  background-color: var(--color-btn-bg);
-  background-size: 200% 200%;
-  box-shadow: inset 0 0 10px 9px var(--color-btn-inset-shadow);
-  text-shadow: 0 1px 3px var(--color-btn-text-shadow);
+  letter-spacing: 0.05em;
+  background-color: var(--button-color);
+  color: #ffffff;
+  border: solid 1px rgba(255, 255, 255, 0.12);
+  border-radius: var(--border-radius);
   cursor: pointer;
-  mix-blend-mode: color-dodge;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  position: relative;
+  transition: box-shadow var(--transition), border var(--transition), background-color var(--transition);
+  box-shadow:
+    inset 0px 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0px 2px 4px rgba(255, 255, 255, 0.1),
+    0px 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.gradient-btn::after {
+.btn::before {
   content: "";
   position: absolute;
+  top: calc(0px - var(--padding));
+  left: calc(0px - var(--padding));
+  width: calc(100% + var(--padding) * 2);
+  height: calc(100% + var(--padding) * 2);
+  border-radius: calc(var(--border-radius) + var(--padding));
   pointer-events: none;
-  left: 0;
+  background-image: linear-gradient(0deg, rgba(0,0,0,0.2), rgba(0,0,0,0.4));
+  z-index: -1;
+  transition: box-shadow var(--transition), filter var(--transition);
+}
+
+.btn::after {
+  content: "";
+  position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  border-radius: var(--rad);
-  background-size: 200% 200%;
-  mix-blend-mode: difference;
-  z-index: 1;
-}
-
-.gradient-layer {
-  position: absolute;
+  border-radius: inherit;
   pointer-events: none;
-  left: -160px;
-  width: 500%;
-  aspect-ratio: 1;
-  background: radial-gradient(
-    ellipse at 65% 180%,
-    var(--color-layer-a),
-    var(--color-layer-b),
-    var(--color-layer-a),
-    var(--color-layer-b),
-    var(--color-layer-a),
-    var(--color-layer-b)
+  background-image: linear-gradient(
+    0deg,
+    #fff,
+    hsl(var(--highlight-color-hue), 100%, 70%),
+    hsla(var(--highlight-color-hue), 100%, 70%, 40%),
+    12%,
+    transparent
   );
-  mix-blend-mode: difference;
-  animation: rotate 12s linear infinite;
+  opacity: 0;
+  transition: opacity var(--transition), filter var(--transition);
 }
 
-.gradient-layer:last-child {
-  mix-blend-mode: color-dodge;
+.btn-letter {
+  position: relative;
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.65);
+  animation: letter-anim 2.4s ease-in-out infinite;
+  transition: color var(--transition), text-shadow var(--transition), opacity var(--transition);
 }
 
-@keyframes rotate {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes letter-anim {
+  50% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.85);
+    color: #ffffff;
+  }
 }
 
-.text-overlay {
+.btn-svg {
+  height: 18px;
+  width: 18px;
+  margin-right: 0.6rem;
+  fill: #e8e8e8;
+  animation: flicker 2s linear infinite;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+  transition: fill var(--transition), filter var(--transition), opacity var(--transition);
+}
+
+@keyframes flicker {
+  50% { opacity: 0.45; }
+}
+
+.txt-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 5.8em;
+  height: 20px;
+}
+
+.txt-1, .txt-2 {
   position: absolute;
+  left: 0;
+  display: flex;
+  gap: 1px;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.txt-2 {
+  opacity: 0;
+  transform: translateY(10px);
   pointer-events: none;
-  z-index: 2;
-  padding: 14px 40px;
-  border-radius: var(--rad);
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  letter-spacing: 0.15rem;
-  color: var(--color-overlay-text);
-  text-shadow: 0 0 6px var(--color-overlay-glow);
-  box-shadow:
-    inset 0 -4px 6px 0 var(--color-overlay-shadow),
-    inset 0 4px 6px 0 var(--color-overlay-highlight);
-  transition: transform 0.3s ease;
-  animation: opacityPulse 5s ease-in-out infinite;
 }
 
-.btn-wrapper:hover {
-  box-shadow: 0 15px 30px -3px rgba(168, 85, 247, 0.45);
-  transform: translateY(-2px);
-}
-
-.btn-wrapper:hover .text-overlay {
-  transform: scale(1.05);
-}
-
-.btn-wrapper:active {
-  transform: translateY(1px);
-}
-
-.light {
-  position: absolute;
+/* React Active State Layer Bindings (Replacing Sticky :focus parameters) */
+.btn.is-loading .txt-1 {
+  opacity: 0;
+  transform: translateY(-10px);
   pointer-events: none;
-  z-index: 1;
-  border-radius: 50px;
-  width: 85%;
-  height: 1.9rem;
-  background-color: rgba(255, 255, 255, 0.35);
-  filter: blur(4px);
-  animation: pulse 3s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
+.btn.is-loading .txt-2 {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-@keyframes opacityPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.75; }
+.btn.is-loading .btn-letter {
+  animation: focused-letter-anim 1s ease-in-out forwards, letter-anim 1.2s ease-in-out infinite;
 }
+
+@keyframes focused-letter-anim {
+  0% { filter: blur(0px); }
+  50% {
+    transform: scale(1.15);
+    filter: blur(2px) brightness(140%);
+  }
+  100% { filter: blur(0px); }
+}
+
+.btn:hover {
+  border: solid 1px hsla(var(--highlight-color-hue), 100%, 80%, 0.5);
+  box-shadow: 0 0 15px hsla(var(--highlight-color-hue), 100%, 65%, 0.25);
+}
+
+.btn:hover::after {
+  opacity: 0.25;
+}
+
+.btn:hover .btn-svg {
+  fill: #ffffff;
+  filter: drop-shadow(0 0 5px hsl(var(--highlight-color-hue), 100%, 70%));
+}
+
+/* Staggered Delay Intervals For Letter Sequences Map */
+.btn-letter:nth-child(1)  { animation-delay: 0s; }
+.btn-letter:nth-child(2)  { animation-delay: 0.08s; }
+.btn-letter:nth-child(3)  { animation-delay: 0.16s; }
+.btn-letter:nth-child(4)  { animation-delay: 0.24s; }
+.btn-letter:nth-child(5)  { animation-delay: 0.32s; }
+.btn-letter:nth-child(6)  { animation-delay: 0.4s; }
+.btn-letter:nth-child(7)  { animation-delay: 0.48s; }
+.btn-letter:nth-child(8)  { animation-delay: 0.56s; }
+.btn-letter:nth-child(9)  { animation-delay: 0.64s; }
 
 /* ==========================================
    JET SPEED LOADER STYLES

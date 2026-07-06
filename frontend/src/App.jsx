@@ -88,26 +88,50 @@ export default function App() {
           AI-powered analytical workflows built to scan equity metrics, compile sentiment feeds, and execute deterministic verdicts faster.
         </p>
 
-        {/* Unified Search Execution Box Block Form */}
-        <form onSubmit={triggerAnalysis} className="w-full max-w-md flex flex-col sm:flex-row gap-4 items-center mb-12 bg-white/60 p-2 rounded-[38px] backdrop-blur-md border border-slate-200/80 shadow-lg shadow-slate-100">
+        {/* Optimized Input Bar with Next-Gen Interactive Action Engine */}
+        <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-10 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
           <input 
             type="text" 
-            placeholder="Enter Stock Ticker (e.g. AAPL, TSLA)"
+            placeholder="Enter Stock Ticker (e.g. AAPL)"
             value={ticker}
             onChange={(e) => setTicker(e.target.value)}
             disabled={loading}
-            className="w-full px-6 py-3 bg-transparent text-slate-800 placeholder-slate-400 font-medium text-base outline-none tracking-wide"
+            className="w-full px-6 py-3 bg-transparent text-slate-800 font-semibold text-base outline-none placeholder:text-slate-400"
           />
           
-          <button type="submit" disabled={loading} className="w-full sm:w-auto btn-wrapper border-none cursor-pointer text-sm">
-            <div className="light"></div>
-            <div className="gradient-layer" style={{ animationDelay: '0s', animationDuration: '25s' }}></div>
-            <div className="gradient-layer" style={{ animationDelay: '0.15s', animationDuration: '15s' }}></div>
-            <div className="gradient-layer" style={{ animationDelay: '0.53s', animationDuration: '26s' }}></div>
-            <div className="gradient-layer" style={{ animationDelay: '0.45s', animationDuration: '17s' }}></div>
-            <div className="gradient-btn">ANALYZE</div>
-            <div className="text-overlay">ANALYZE</div>
-          </button>
+          {/* Modernized Interactive Glow Action Engine */}
+          <div className="btn-wrapper w-full sm:w-auto shrink-0">
+            <button 
+              type="submit" 
+              disabled={loading} 
+              className={`btn ${loading ? 'is-loading' : ''}`}
+            >
+              {/* Dynamic Sparkle Vector Core */}
+              <svg className="btn-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+                />
+              </svg>
+
+              <div className="txt-wrapper">
+                {/* Default Display Matrix */}
+                <div className="txt-1">
+                  {["A", "N", "A", "L", "Y", "Z", "E"].map((char, index) => (
+                    <span key={index} className="btn-letter">{char}</span>
+                  ))}
+                </div>
+                
+                {/* Active Engine Processing Matrix */}
+                <div className="txt-2">
+                  {["A", "N", "A", "L", "Y", "Z", "I", "N", "G"].map((char, index) => (
+                    <span key={index} className="btn-letter">{char}</span>
+                  ))}
+                </div>
+              </div>
+            </button>
+          </div>
         </form>
 
         {/* Dynamic State Layout Rendering Gate */}
