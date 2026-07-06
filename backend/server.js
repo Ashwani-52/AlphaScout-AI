@@ -3,6 +3,7 @@ import cors from 'cors';
 import 'dotenv/config';
 import { getStockData } from './src/services/stockService.js';
 import { getCompanyNews } from './src/services/newsService.js';
+import { generateInvestmentReport } from './src/services/agentService.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -71,6 +72,28 @@ app.get('/api/test/:ticker', async (req, res) => {
   }
 });
 
+// AI analysis endpoint returning a markdown report
+app.post('/api/analyze', async (req, res) => {
+  const { ticker } = req.body;
+  if (!ticker) {
+    return res.status(400).json({ error: 'Ticker symbol is required in request body.' });
+  }
+
+  try {
+    const report = await generateInvestmentReport(ticker);
+    res.json({
+      success: true,
+      ticker: ticker.toUpperCase(),
+      report
+    });
+  } catch (error) {
+    console.error(`[Server] AI analysis failed for ${ticker}:`, error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'An error occurred during AI analysis.'
+    });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 AlphaScout Node Backend listening on port ${PORT}`);
