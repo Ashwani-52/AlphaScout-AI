@@ -69,7 +69,7 @@ export default function App() {
         }}
       />
 
-      <header className="w-full max-w-7xl mx-auto px-6 py-6 flex justify-between items-center z-10">
+      <header className="w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-center z-10">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 animate-pulse"></div>
           <span className="font-semibold text-lg text-slate-800">AlphaScout AI</span>
@@ -79,7 +79,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full max-w-3xl mx-auto px-6 pt-12 pb-24 z-10 flex-1 flex flex-col justify-center items-center text-center">
+      <main className="w-full mx-auto px-6 pt-12 pb-24 z-10 flex-1 flex flex-col items-center text-center">
         <h1 className="text-5xl md:text-6xl font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
           Your next-level <br />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
