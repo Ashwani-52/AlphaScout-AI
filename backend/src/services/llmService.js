@@ -29,10 +29,10 @@ export async function generateReport({ ticker, stockData, sentiment, peers }) {
     // High-Fidelity Safe Fallback Matrix
     return {
       overview: `${stockData.name || ticker} is a leading global technology provider. It maintains a robust market position supported by stable revenue cycles and customer ecosystems.`,
-      technicalSignal: `The stock is currently trading at $${stockData.price ?? 'N/A'}, showing a ${stockData.changePercent ?? '0'}% change. Technical charts indicate support consolidation.`,
+      technicalSignal: `The stock is currently trading at $${stockData.price ?? 'N/A'}, showing a ${stockData.changePercent ?? '0'}% change. Technical charts indicate support consolidation near technical resistance.`,
       peerStanding: `In comparison to its industry peers, ${stockData.name || ticker} trades at a P/E of ${stockData.fundamentals?.peRatio ?? 'N/A'}, which is in-line with historical industry averages.`,
-      risks: `Primary risks include persistent macroeconomic interest rate adjustments and competitive sector landscape pressures.`,
-      verdict: `Hold — Solid business fundamentals with stable metrics, balanced by short-term valuation constraints.`
+      risks: `Primary risks include macro risk from inflation, liquidity constraints in secondary market systems, and macro systematic asset volatility.`,
+      verdict: `Hold — Solid business fundamentals with stable metrics, balanced by near-term valuation constraints.`
     };
   }
 }

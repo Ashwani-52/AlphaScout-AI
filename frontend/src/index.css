@@ -740,3 +740,270 @@
   }
 }
 
+
+/* ==========================================================================
+   ALPHA-SCOUT 3-COLUMN TRIPLE TERMINAL ARCHITECTURE 
+   ========================================================================== */
+
+/* Upgrades layout container parameters to stretch further into margins */
+.dashboard-container {
+  max-width: 1560px; /* Wider footprint to make sure the left column fits beautifully */
+}
+
+/* Modifies layout grid to support 3 distinct sequential sections */
+.dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 370px; /* 3 explicit sections */
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Live Card Structural Mechanics */
+.live-tracker-card {
+  border-color: rgba(79, 140, 255, 0.15) !important;
+  background: linear-gradient(to bottom, rgba(13, 19, 36, 0.4), rgba(13, 19, 36, 0.1));
+}
+
+.live-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+/* Blinking institutional live node design */
+.live-pulse-node {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #10b981;
+  animation: liveBlink 1.8s infinite ease-in-out;
+}
+
+.live-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0 0 20px 0;
+}
+
+/* Vertical Stream Engine Elements */
+.ticker-stream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ticker-stream-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.25s ease;
+}
+
+/* Micro interaction highlights when data flashes updates */
+.ticker-stream-item.alert-up {
+  border-left: 3px solid #10b981;
+}
+.ticker-stream-item.alert-down {
+  border-left: 3px solid #ef4444;
+}
+
+.ticker-item-profile, .ticker-item-metrics {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.ticker-item-metrics {
+  text-align: right;
+}
+
+.ticker-symbol-txt {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.ticker-name-txt {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.ticker-price-txt {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums; /* Prevents text shifting when digits tick */
+}
+
+.ticker-change-pct {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ticker-change-pct.up { color: #10b981; }
+.ticker-change-pct.down { color: #ef4444; }
+
+/* Micro Animation Nodes */
+@keyframes liveBlink {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Responsive Adaptive Viewport Collapse Mixins */
+@media (max-width: 1300px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr 380px; /* Drop left column to full-width block stack below on smaller screens */
+  }
+}
+@media (max-width: 1000px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ==========================================================================
+   BEGINNER INTERACTIVE GLOSSARY FLOATING CARD MATRIX
+   ========================================================================== */
+
+/* Target terms styling rules */
+.interactive-glossary-term {
+  position: relative;
+  color: var(--text-primary);
+  font-weight: 600;
+  cursor: help;
+  border-bottom: 2px dotted #4f8cff; /* Noticeable blue tracking underline */
+  padding: 0 2px;
+  background: rgba(79, 140, 255, 0.05);
+  border-radius: 4px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.interactive-glossary-term:hover {
+  background: rgba(79, 140, 255, 0.15);
+  color: #4f8cff;
+}
+
+/* Micro question mark flag */
+.info-spark-dot {
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.interactive-glossary-term:hover .info-spark-dot {
+  background: #4f8cff;
+  color: #ffffff;
+  border-color: #4f8cff;
+}
+
+/* Beginner Card Helper Footnote Block */
+.beginner-guide-hint {
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+/* Floating Glass Overlay Structure */
+.glossary-floating-overlay {
+  position: absolute;
+  transform: translate(-50%, -100%); /* Centers pop-up perfectly above text */
+  width: 290px;
+  background: rgba(13, 19, 36, 0.96); /* Clean high-contrast deep blue */
+  border: 1px solid rgba(79, 140, 255, 0.3);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(79, 140, 255, 0.1);
+  z-index: 9999;
+  pointer-events: none; /* Prevents cursor fighting during fast pointer moves */
+  animation: tooltipFadeIn 0.18s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 6px;
+}
+
+.overlay-spark-icon {
+  font-size: 0.9rem;
+}
+
+.glossary-floating-overlay h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4f8cff;
+}
+
+.glossary-floating-overlay p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Lower Positioning Arrow Centerpiece Anchor */
+.overlay-arrow-anchor {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: rgba(13, 19, 36, 0.96);
+  border-right: 1px solid rgba(79, 140, 255, 0.3);
+  border-bottom: 1px solid rgba(79, 140, 255, 0.3);
+}
+
+/* Tooltip micro-interaction transition animations */
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -96%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%) scale(1);
+  }
+}
+
+
