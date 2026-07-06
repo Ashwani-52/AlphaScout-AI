@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PriceChart from './PriceChart';
 import ComparisonTable from './ComparisonTable';
 
@@ -48,6 +48,19 @@ export default function Briefing({ result }) {
   // State configuration to track active interactive hover text items
   const [hoveredTerm, setHoveredTerm] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  // ⚓ Scroll anchor reference for auto-scrolling to dashboard
+  const containerRef = useRef(null);
+
+  // 🚀 Automatic smooth scroll when new analysis results arrive
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }, [result]);
 
   // 📈 LIVE WATCHLIST SIMULATION DATA ENGINE
   const [liveStocks, setLiveStocks] = useState([
@@ -139,7 +152,7 @@ export default function Briefing({ result }) {
   };
 
   return (
-    <div className="dashboard-container">
+    <div ref={containerRef} className="dashboard-container">
       
       {/* ACTION VERDICT BANNER */}
       <div className={`action-banner ${signal.cls}`}>
