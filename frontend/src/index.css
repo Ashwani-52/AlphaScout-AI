@@ -499,3 +499,244 @@
   color: #475569;
 }
 
+
+/* ==========================================================================
+   ALPHA-SCOUT PREMIUM WIDESCREEN DASHBOARD ARCHITECTURE 
+   ========================================================================== */
+
+/* Global Dashboard Optimization Rules */
+.dashboard-container {
+  width: 100%;
+  max-width: 1340px; /* Expands to utilize the empty spaces on the sides */
+  margin: 44px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+/* 🟢🔴 Visual Action Banners (Traffic Light Matrix Rules) */
+.action-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 36px;
+  border-radius: 24px;
+  margin-bottom: 24px;
+  border: 1px solid transparent;
+  text-align: left;
+  backdrop-filter: blur(10px);
+}
+
+/* Green Glow Style - When it is safe to Invest */
+.action-banner.signal-go {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(5, 150, 105, 0.04) 100%);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.1);
+}
+.action-banner.signal-go .action-button-simulation {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+}
+.action-banner.signal-go .action-title { color: #10b981; }
+
+/* Red Glow Style - High Volatility / Risk (Do Not Invest) */
+.action-banner.signal-stop {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(185, 28, 28, 0.04) 100%);
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(239, 68, 68, 0.1);
+}
+.action-banner.signal-stop .action-button-simulation {
+  background: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+}
+.action-banner.signal-stop .action-title { color: #ef4444; }
+
+/* Amber Caution Style - Neutral / Hold */
+.action-banner.signal-caution {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(217, 119, 6, 0.04) 100%);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.1);
+}
+.action-banner.signal-caution .action-button-simulation {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+.action-banner.signal-caution .action-title { color: #eab308; }
+
+/* Core Inner Banner Typography Settings */
+.action-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+}
+.action-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+.action-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 700px;
+  line-height: 1.5;
+}
+.action-badge-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.action-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+.action-button-simulation {
+  padding: 12px 28px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.9rem;
+  border-radius: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Widescreen Dashboard Dual Column Grid System */
+.dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px; /* 420px fixed sidebar width, rest is fluid */
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-main-column,
+.dashboard-sidebar-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Modular Dashboard Dashboard Glass Cards */
+.dashboard-card {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  text-align: left;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.time-pill {
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 20px;
+  color: var(--text-muted);
+  border: 1px solid var(--glass-border);
+}
+
+.table-intro-text {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 6px 0 12px 0;
+}
+
+/* Sidebar Information Utilities */
+.asset-identity-card {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  position: relative;
+  overflow: hidden;
+}
+.ticker-badge-pill {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent-blue);
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+.asset-profile-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+  max-width: 70%;
+}
+.sidebar-narrative {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 8px 0 16px 0;
+}
+.sidebar-narrative:last-child {
+  margin-bottom: 0;
+}
+
+/* Sentiment Dot Engine indicators */
+.sentiment-dot-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.sentiment-dot-indicator.positive, .sentiment-dot-indicator.bullish { background: #10b981; box-shadow: 0 0 10px #10b981; }
+.sentiment-dot-indicator.negative, .sentiment-dot-indicator.bearish { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+.sentiment-dot-indicator.neutral { background: #64748b; }
+
+.sentiment-highlight-box {
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
+/* Desktop Responsiveness Breakpoint rules */
+@media (max-width: 1100px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr; /* Stack columns on tablets or tiny displays */
+  }
+}
+@media (max-width: 640px) {
+  .action-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+  }
+  .action-badge-box {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .action-button-simulation {
+    width: 100%;
+    text-align: center;
+  }
+}
+
