@@ -6,24 +6,31 @@ import { getStockMetrics, getMarketNews } from './dataService.js';
  * @param {string} ticker - The stock ticker symbol.
  * @returns {Promise<string>} The generated markdown investment report.
  */
-export async function generateInvestmentReport(ticker) {
+export async function generateInvestmentReport(ticker, onStep = () => {}) {
   if (!ticker || typeof ticker !== 'string') {
     throw new Error('A valid string ticker symbol must be provided.');
   }
 
   const cleanTicker = ticker.trim().toUpperCase();
 
+  onStep('Connecting to data extraction layers...');
+
   // 1. Gather data concurrently
-  const [metrics, news] = await Promise.all([
-    getStockMetrics(cleanTicker),
-    getMarketNews(cleanTicker)
-  ]);
+  onStep(`Fetching financial metrics for ${cleanTicker} from Yahoo Finance...`);
+  const metricsPromise = getStockMetrics(cleanTicker);
+
+  onStep(`Harvesting recent news headlines for ${cleanTicker}...`);
+  const newsPromise = getMarketNews(cleanTicker);
+
+  const [metrics, news] = await Promise.all([metricsPromise, newsPromise]);
 
   // 2. Verify Hugging Face token is defined
   const apiKey = process.env.HUGGINGFACEHUB_API_TOKEN;
   if (!apiKey) {
     throw new Error('Hugging Face API Token (HUGGINGFACEHUB_API_TOKEN) is not defined in environment variables.');
   }
+
+  onStep('Spinning up Wall Street Analyst intelligence reasoning engine...');
 
   // 3. Initialize Hugging Face Inference model via LangChain
   const model = new HuggingFaceInference({
@@ -69,9 +76,12 @@ Do not hallucinate facts. If there is no data to support a point, say so. Do not
 
 Begin report:`;
 
+  onStep('Parsing financial data, catalysts, and risk structures...');
+
   // 5. Invoke the model and return the text output
   try {
     const reportText = await model.invoke(prompt);
+    onStep('Finalizing investment report brief...');
     return reportText;
   } catch (error) {
     console.error(`[AgentService] Error generating report for ${cleanTicker}:`, error);
