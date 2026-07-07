@@ -106,7 +106,10 @@ export default function Briefing({ result }) {
     }
   }, [result]);
 
-  // 📈 LIVE WATCHLIST SIMULATION DATA ENGINE
+  // backend environment configuration
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+
+  // 1. Core Live Watchlist Setup with initial baseline fallbacks
   const [liveStocks, setLiveStocks] = useState([
     { symbol: 'SPY', name: 'S&P 500 Index', price: 5422.10, change: 0.34, status: 'up' },
     { symbol: 'QQQ', name: 'NASDAQ 100', price: 19640.45, change: 0.82, status: 'up' },
@@ -115,25 +118,59 @@ export default function Briefing({ result }) {
     { symbol: 'BTC', name: 'Bitcoin Proxy', price: 61450.00, change: -1.24, status: 'down' }
   ]);
 
-  // Forces active ticking numbers to mock streaming WebSocket connections
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setLiveStocks(prevStocks => 
-        prevStocks.map(stock => {
-          const drift = (Math.random() - 0.49) * (stock.price * 0.001); // Minor variance
-          const newPrice = stock.price + drift;
-          const newChange = stock.change + (drift / stock.price) * 100;
-          return {
-            ...stock,
-            price: parseFloat(newPrice.toFixed(2)),
-            change: parseFloat(newChange.toFixed(2)),
-            status: drift >= 0 ? 'up' : 'down'
-          };
+  // 2. Production Fetch Mechanism hitting your Render backend proxy route
+  const fetchRealTimeMetrics = async () => {
+    try {
+      const stocksToFetch = [
+        { symbol: 'SPY', name: 'S&P 500 Index' },
+        { symbol: 'QQQ', name: 'NASDAQ 100' },
+        { symbol: 'NVDA', name: 'NVIDIA Corp.' },
+        { symbol: 'MSFT', name: 'Microsoft Corp.' },
+        { symbol: 'BTC', name: 'Bitcoin Proxy' }
+      ];
+
+      const updatedStocks = await Promise.all(
+        stocksToFetch.map(async (stock) => {
+          try {
+            const response = await fetch(`${backendUrl}/api/live-ticker/${stock.symbol}`);
+            if (!response.ok) {
+              throw new Error(`HTTP status ${response.status}`);
+            }
+            const data = await response.json();
+            return {
+              ...stock,
+              price: parseFloat(data.price.toFixed(2)),
+              change: parseFloat(data.changePercent.toFixed(2)),
+              status: data.changePercent >= 0 ? 'up' : 'down'
+            };
+          } catch (err) {
+            console.error(`Failed live sync alignment for ${stock.symbol}:`, err.message);
+            // Return null price to flag error/fallback merge
+            return { ...stock, price: -1, change: 0, status: 'up' };
+          }
         })
       );
-    }, 2500); // Pulse data shifts every 2.5 seconds
 
-    return () => clearInterval(interval);
+      // Merge fetched results with current state (keep old value if fetch failed)
+      setLiveStocks(prevStocks => {
+        return prevStocks.map((oldStock, idx) => {
+          const fetched = updatedStocks[idx];
+          if (fetched && fetched.price > 0) {
+            return fetched;
+          }
+          return oldStock;
+        });
+      });
+    } catch (globalErr) {
+      console.error("Watchlist refresh dispatch interrupted:", globalErr.message);
+    }
+  };
+
+  // 3. Automated Sync Synchronizer Engine (60s Cadence)
+  useEffect(() => {
+    fetchRealTimeMetrics();
+    const liveUpdateInterval = setInterval(fetchRealTimeMetrics, 60000);
+    return () => clearInterval(liveUpdateInterval);
   }, []);
 
   // Scans paragraph text and converts recognized financial jargon into interactive elements

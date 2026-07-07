@@ -83,6 +83,45 @@ app.get('/api/analyze', async (req, res) => {
   }
 });
 
+// Live Stock Quote Proxy Route using Finnhub API
+app.get('/api/live-ticker/:symbol', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+    const apiKey = process.env.FINNHUB_API_KEY;
+
+    if (!apiKey) {
+      return res.status(500).json({ error: "Finnhub API key is missing on the server host environment." });
+    }
+
+    // Map BTC to Binance crypto symbol for Finnhub
+    const finnhubSymbol = symbol === 'BTC' ? 'BINANCE:BTCUSDT' : symbol;
+
+    const response = await fetch(
+      `https://finnhub.io/api/v1/quote?symbol=${finnhubSymbol}&token=${apiKey}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Finnhub request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // Finnhub c = current price, dp = percentage change
+    if (data.c === undefined || data.c === null || data.c === 0) {
+      return res.status(404).json({ error: `No active market data found for symbol: ${symbol}` });
+    }
+
+    res.json({
+      symbol: symbol,
+      price: data.c,
+      changePercent: data.dp
+    });
+  } catch (error) {
+    console.error(`[Finnhub Proxy] Fetch failure for ${req.params.symbol}:`, error.message);
+    res.status(500).json({ error: "Failed to fetch live stock quote." });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 AlphaScout Node Backend listening on port ${PORT}`);
 });
