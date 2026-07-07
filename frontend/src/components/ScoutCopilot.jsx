@@ -92,13 +92,15 @@ export default function ScoutCopilot({ ticker, reportReady }) {
         )}
       </div>
 
-      <div className="copilot-suggestions">
-        {SUGGESTED_QUESTIONS(ticker).map((q) => (
-          <button key={q} className="copilot-chip" onClick={() => sendMessage(q)} disabled={loading}>
-            {q}
-          </button>
-        ))}
-      </div>
+      {messages.length === 1 && (
+        <div className="copilot-suggestions">
+          {SUGGESTED_QUESTIONS(ticker).map((q) => (
+            <button key={q} className="copilot-chip" onClick={() => sendMessage(q)} disabled={loading}>
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="copilot-input-row">
         <input
