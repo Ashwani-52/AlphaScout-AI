@@ -81,3 +81,10 @@ async function callModelAPI(prompt) {
   
   return data.content || JSON.stringify(data);
 }
+
+/**
+ * Standard interface for querying the model with a custom prompt.
+ */
+export async function queryLLM(prompt) {
+  return callModelAPI(prompt);
+}

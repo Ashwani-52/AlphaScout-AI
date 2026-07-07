@@ -4,6 +4,7 @@ import 'dotenv/config';
 import { getStockData } from './src/services/stockService.js';
 import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
+import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -15,6 +16,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use('/api/chat', chatRoute);
 
 // Root health check route
 app.get('/', (req, res) => {
@@ -72,6 +74,8 @@ app.get('/api/analyze', async (req, res) => {
     const resultPayload = await runResearchAgent(ticker, (stepMessage) => {
       sendUpdate('step', { message: stepMessage });
     });
+
+    cacheReportForChat(ticker, resultPayload);
 
     sendUpdate('result', { report: resultPayload });
 

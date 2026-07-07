@@ -76,3 +76,18 @@ export async function getHistoricalPrices(ticker, range = '3mo') {
     return [];
   }
 }
+
+/**
+ * Lightweight, fast quote fetch for chat questions — no historical data,
+ * no fundamentals, just the current price snapshot. Keep this separate
+ * from your full getStockData() so chat replies stay quick.
+ */
+export async function getLiveQuote(ticker) {
+  const q = await yahooFinance.quote(ticker);
+  return {
+    price: q.regularMarketPrice,
+    changePercent: q.regularMarketChangePercent?.toFixed(2),
+    marketState: q.marketState, // 'REGULAR', 'CLOSED', 'PRE', 'POST'
+    asOf: new Date().toISOString(),
+  };
+}
