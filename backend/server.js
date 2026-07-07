@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import { getStockData, getRealMarketMovers, getRealSectorTrending } from './src/services/stockService.js';
+import { getStockData, getRealMarketMovers, getRealSectorTrending, getLiveQuote } from './src/services/stockService.js';
 import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
@@ -87,41 +87,23 @@ app.get('/api/analyze', async (req, res) => {
   }
 });
 
-// Live Stock Quote Proxy Route using Finnhub API
+// Live Stock Quote Proxy Route using Yahoo Finance (aligned with Top Movers)
 app.get('/api/live-ticker/:symbol', async (req, res) => {
   try {
     const symbol = req.params.symbol.toUpperCase();
-    const apiKey = process.env.FINNHUB_API_KEY;
-
-    if (!apiKey) {
-      return res.status(500).json({ error: "Finnhub API key is missing on the server host environment." });
-    }
-
-    // Map BTC to Binance crypto symbol for Finnhub
-    const finnhubSymbol = symbol === 'BTC' ? 'BINANCE:BTCUSDT' : symbol;
-
-    const response = await fetch(
-      `https://finnhub.io/api/v1/quote?symbol=${finnhubSymbol}&token=${apiKey}`
-    );
-
-    if (!response.ok) {
-      throw new Error(`Finnhub request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    // Finnhub c = current price, dp = percentage change
-    if (data.c === undefined || data.c === null || data.c === 0) {
+    const data = await getLiveQuote(symbol);
+    
+    if (!data || data.price === undefined || data.price === null) {
       return res.status(404).json({ error: `No active market data found for symbol: ${symbol}` });
     }
 
     res.json({
       symbol: symbol,
-      price: data.c,
-      changePercent: data.dp
+      price: data.price,
+      changePercent: data.changePercent
     });
   } catch (error) {
-    console.error(`[Finnhub Proxy] Fetch failure for ${req.params.symbol}:`, error.message);
+    console.error(`[Yahoo Finance Proxy] Fetch failure for ${req.params.symbol}:`, error.message);
     res.status(500).json({ error: "Failed to fetch live stock quote." });
   }
 });

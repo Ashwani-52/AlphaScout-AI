@@ -77,7 +77,7 @@ export default function TopMovers() {
                     <div className="company-profile-cell">
                       <div className="brand-avatar-container">
                         <img 
-                          src={`https://logo.clearbit.com/${stock.domain}`} 
+                          src={`https://www.google.com/s2/favicons?domain=${stock.domain}&sz=128`} 
                           alt={stock.name}
                           onError={(e) => { e.target.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop&q=60`; }}
                         />

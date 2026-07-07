@@ -83,10 +83,11 @@ export async function getHistoricalPrices(ticker, range = '3mo') {
  * from your full getStockData() so chat replies stay quick.
  */
 export async function getLiveQuote(ticker) {
-  const q = await yahooFinance.quote(ticker);
+  const symbol = ticker === 'BTC' ? 'BTC-USD' : ticker;
+  const q = await yahooFinance.quote(symbol);
   return {
     price: q.regularMarketPrice,
-    changePercent: q.regularMarketChangePercent?.toFixed(2),
+    changePercent: q.regularMarketChangePercent !== undefined ? parseFloat(q.regularMarketChangePercent.toFixed(2)) : 0,
     marketState: q.marketState, // 'REGULAR', 'CLOSED', 'PRE', 'POST'
     asOf: new Date().toISOString(),
   };
