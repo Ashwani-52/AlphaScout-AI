@@ -75,6 +75,34 @@ ${trimmed}
 
 Answer:`;
 
-  const response = await queryLLM(prompt);
-  return response.trim();
+  try {
+    const response = await queryLLM(prompt);
+    return response.trim();
+  } catch (error) {
+    console.warn(`[ChatService] LLM gateway failed (${error.message}). Using context-grounded fallback response engine.`);
+
+    const qLower = trimmed.toLowerCase();
+    const currentPriceStr = liveQuote 
+      ? `$${liveQuote.price} (representing a change of ${liveQuote.changePercent}% today with market state being ${liveQuote.marketState})`
+      : `$${reportContext.priceSummary?.current || 'N/A'} (from previous analysis snapshot)`;
+
+    if (qLower.includes('price') || qLower.includes('close') || qLower.includes('value') || qLower.includes('cost') || qLower.includes('current') || qLower.includes('sell') || qLower.includes('buy')) {
+      return `Based on live data, the current price for ${ticker} is ${currentPriceStr}. ${reportContext.technicalSignal}`;
+    }
+    if (qLower.includes('risk') || qLower.includes('danger') || qLower.includes('threat') || qLower.includes('weak') || qLower.includes('bad')) {
+      return `For ${ticker}, the primary threat vectors identified in our analysis are: ${reportContext.risks}`;
+    }
+    if (qLower.includes('pe') || qLower.includes('p/e') || qLower.includes('ratio') || qLower.includes('valuation') || qLower.includes('worth')) {
+      return `Analyzing ${ticker}'s valuation metrics: ${reportContext.peerStanding}`;
+    }
+    if (qLower.includes('verdict') || qLower.includes('conclusion') || qLower.includes('opinion') || qLower.includes('recommendation')) {
+      return `The research engine's verdict for ${ticker} is: ${reportContext.verdict}. ${reportContext.overview}`;
+    }
+    if (qLower.includes('technical') || qLower.includes('chart') || qLower.includes('support') || qLower.includes('resistance') || qLower.includes('average')) {
+      return `Technical signals report that: ${reportContext.technicalSignal}`;
+    }
+
+    // Generic descriptive fallback response grounding
+    return `Regarding ${ticker}: the current price is ${currentPriceStr} with an overall investment verdict of ${reportContext.verdict}. Primary risks include: ${reportContext.risks}`;
+  }
 }
