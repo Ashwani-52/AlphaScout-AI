@@ -1757,4 +1757,117 @@
 }
 
 
+/* ==========================================================================
+   MOBILE & TABLET CORE RESPONSIVENESS PATCHES
+   ========================================================================== */
+
+/* Allow column cards and chart containers to shrink correctly on smaller viewports */
+.dashboard-left-column,
+.dashboard-main-column,
+.dashboard-sidebar-column {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.dashboard-card {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure data tables scroll horizontally instead of stretching the main wrapper cards */
+.movers-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.comparison-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr !important; /* Stack watchlist, charts, and sidebar vertically */
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 0 16px !important;
+    margin: 20px auto !important;
+  }
+  
+  .dashboard-grid-layout {
+    gap: 16px !important;
+  }
+  
+  .dashboard-card {
+    padding: 16px !important;
+  }
+  
+  /* Make action signal banners layout vertically */
+  .action-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 20px !important;
+  }
+  
+  .action-badge-box {
+    width: 100% !important;
+    align-items: flex-start !important;
+  }
+  
+  .action-button-simulation {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  /* Make landing header logo row stack or align neatly */
+  header {
+    padding: 16px 8px !important;
+  }
+
+  main h1 {
+    font-size: 2.25rem !important; /* Scale down landing header typography */
+    line-height: 1.25 !important;
+  }
+
+  /* Adjust watchlist card padding */
+  .ticker-stream-item {
+    padding: 10px 12px !important;
+  }
+  
+  .ticker-name-txt {
+    max-width: 80px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Search input layout card fixes */
+  form {
+    border-radius: 20px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  form input {
+    padding: 8px 12px !important;
+    text-align: center !important;
+  }
+  
+  .btn-wrapper {
+    width: 100% !important;
+  }
+  
+  .btn {
+    width: 100% !important;
+  }
+}
+
+
+
 
