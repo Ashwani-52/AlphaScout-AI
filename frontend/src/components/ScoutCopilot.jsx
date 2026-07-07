@@ -51,7 +51,7 @@ export default function ScoutCopilot({ ticker, reportReady }) {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: "I couldn't process that just now — try again in a moment." },
+        { role: 'assistant', text: err.message || "I couldn't process that just now — try again in a moment." },
       ]);
     } finally {
       setLoading(false);
