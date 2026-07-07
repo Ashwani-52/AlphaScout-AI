@@ -61,7 +61,7 @@ export default function App() {
         repeatDelay={1}
         className={cn(
           "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
-          "inset-x-0 inset-y-[-20%] h-[140%] skew-y-6 stroke-slate-300/40 fill-slate-300/20",
+          "inset-x-0 inset-y-0 h-full w-full skew-y-6 stroke-slate-300/40 fill-slate-300/20",
         )}
         style={{
           position: 'absolute',
