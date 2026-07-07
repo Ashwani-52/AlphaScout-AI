@@ -23,27 +23,63 @@ export async function answerFollowUp({ ticker, question, reportContext, history 
     return `Anytime! Let me know if anything else about ${ticker} is unclear.`;
   }
 
-  // Always fetch a live quote — cheap, single call, keeps price answers current
+  // Scan for alternative ticker mentioned in the question (ignoring common words)
+  const words = trimmed.match(/\b[A-Za-z]{3,5}\b/g) || [];
+  const commonWords = new Set([
+    'the', 'is', 'of', 'for', 'and', 'you', 'your', 'are', 'any', 'can', 'how', 
+    'why', 'who', 'our', 'out', 'off', 'not', 'but', 'yes', 'now', 'get', 'has', 
+    'did', 'does', 'make', 'just', 'same', 'will', 'was', 'its', 'all', 'him', 
+    'her', 'them', 'they', 'his', 'their', 'into', 'with', 'from', 'this', 'that', 
+    'these', 'those', 'than', 'then', 'also', 'very', 'here', 'there', 'when', 
+    'been', 'have', 'had', 'done', 'some', 'many', 'much', 'each', 'both', 'only', 
+    'such', 'like', 'what', 'sells', 'time', 'date', 'show', 'tell', 'news', 
+    'price', 'stock', 'share', 'good', 'info', 'risks', 'about', 'trend', 'chart', 
+    'close', 'high', 'value', 'helps', 'means', 'trade', 'asset', 'buyer', 
+    'sell', 'today', 'more', 'would', 'could', 'should', 'which', 'asked'
+  ]);
+
+  let activeTicker = ticker.toUpperCase();
+  let detectedTicker = null;
+  for (const word of words) {
+    const upperWord = word.toUpperCase();
+    if (upperWord !== ticker.toUpperCase() && !commonWords.has(word.toLowerCase())) {
+      detectedTicker = upperWord;
+      break;
+    }
+  }
+
   let liveQuote = null;
-  try {
-    liveQuote = await getLiveQuote(ticker);
-  } catch {
-    liveQuote = null; // fall back to report snapshot if this fails
+  if (detectedTicker) {
+    try {
+      liveQuote = await getLiveQuote(detectedTicker);
+      activeTicker = detectedTicker;
+    } catch (err) {
+      console.warn(`[ChatService] Failed to fetch live quote for alternative ticker ${detectedTicker}, falling back to primary ${ticker}`);
+    }
+  }
+
+  // Fetch primary ticker live quote if alternative fetch didn't run or failed
+  if (!liveQuote) {
+    try {
+      liveQuote = await getLiveQuote(ticker);
+      activeTicker = ticker.toUpperCase();
+    } catch {
+      liveQuote = null; // fall back to report snapshot if this fails
+    }
   }
 
   const contextBlock = `
-Ticker: ${ticker}
-Overview: ${reportContext.overview}
-Technical Signal: ${reportContext.technicalSignal}
-Peer Standing: ${reportContext.peerStanding}
-Risks: ${reportContext.risks}
-Verdict: ${reportContext.verdict}
-Sentiment: ${reportContext.sentiment?.label}
+Ticker: ${activeTicker}
+Overview: ${activeTicker === ticker.toUpperCase() ? reportContext.overview : `Live profile query for ${activeTicker}.`}
+Technical Signal: ${activeTicker === ticker.toUpperCase() ? reportContext.technicalSignal : `Technical indicators mapping for ${activeTicker}.`}
+Peer Standing: ${activeTicker === ticker.toUpperCase() ? reportContext.peerStanding : `Sector standings for ${activeTicker}.`}
+Risks: ${activeTicker === ticker.toUpperCase() ? reportContext.risks : `Macro risk vectors for ${activeTicker}.`}
+Verdict: ${activeTicker === ticker.toUpperCase() ? reportContext.verdict : `Investment status for ${activeTicker}.`}
 
 LIVE DATA (fetched right now, use this over any older number):
 ${liveQuote
   ? `Current price: $${liveQuote.price} | Change today: ${liveQuote.changePercent}% | Market state: ${liveQuote.marketState}`
-  : `Live quote unavailable — use report snapshot price of $${reportContext.priceSummary?.current} and note it may be stale.`}
+  : `Live quote unavailable.`}
 `.trim();
 
   const historyBlock = history
@@ -52,7 +88,7 @@ ${liveQuote
     .join('\n');
 
   const prompt = `You are Scout Copilot, a friendly financial assistant embedded in an
-investment research dashboard, currently focused on ${ticker}. You have access to
+investment research dashboard, currently focused on ${activeTicker}. You have access to
 an existing research report AND a live price quote (both below).
 
 Guidelines:
@@ -64,7 +100,7 @@ Guidelines:
   you don't have that information rather than guessing.
 - Keep answers to 2-4 sentences. Plain language.
 
-=== REPORT + LIVE DATA FOR ${ticker} ===
+=== REPORT + LIVE DATA FOR ${activeTicker} ===
 ${contextBlock}
 
 === CONVERSATION SO FAR ===
@@ -85,6 +121,10 @@ Answer:`;
     const currentPriceStr = liveQuote 
       ? `$${liveQuote.price} (representing a change of ${liveQuote.changePercent}% today with market state being ${liveQuote.marketState})`
       : `$${reportContext.priceSummary?.current || 'N/A'} (from previous analysis snapshot)`;
+
+    if (activeTicker !== ticker.toUpperCase()) {
+      return `For ${activeTicker}: Based on real-time data, the current price is ${currentPriceStr}. I don't have the full cached report for ${activeTicker} (we are currently analyzing ${ticker}), but you can type ${activeTicker} in the search bar above to generate a full analysis report!`;
+    }
 
     if (qLower.includes('price') || qLower.includes('close') || qLower.includes('value') || qLower.includes('cost') || qLower.includes('current') || qLower.includes('sell') || qLower.includes('buy')) {
       return `Based on live data, the current price for ${ticker} is ${currentPriceStr}. ${reportContext.technicalSignal}`;
