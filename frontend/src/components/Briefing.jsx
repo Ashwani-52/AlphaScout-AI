@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import PriceChart from './PriceChart';
 import ComparisonTable from './ComparisonTable';
 import FloatingChatbot from './FloatingChatbot';
+import TopMovers from './TopMovers';
+import SectorTrending from './SectorTrending';
 
 
 // Beginner-friendly financial glossary definitions
@@ -294,6 +296,8 @@ export default function Briefing({ result }) {
             <div className="table-intro-text">{result.peerStanding}</div>
             <ComparisonTable peers={result.peers} available={result.peersAvailable} />
           </section>
+
+          <TopMovers />
         </div>
 
         {/* COLUMN 3: RIGHT PANEL - INFORMATION REGISTRY */}
@@ -343,6 +347,8 @@ export default function Briefing({ result }) {
               ))}
             </div>
           </section>
+          
+          <SectorTrending />
         </div>
 
       </div>

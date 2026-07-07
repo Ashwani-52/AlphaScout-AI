@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnimatedGridPattern } from './components/ui/animated-grid-pattern';
 import { cn } from './lib/utils';
 import Briefing from './components/Briefing';
+import TerminalFooter from './components/TerminalFooter';
 
 export default function App() {
   const [ticker, setTicker] = useState('');
@@ -138,16 +139,7 @@ export default function App() {
         {analysis && <Briefing result={analysis} />}
       </main>
 
-      <footer className="w-full max-w-7xl mx-auto px-6 pb-6 pt-6">
-        <div className="grid grid-cols-6 sm:grid-cols-12 gap-2 max-w-xl mx-auto opacity-40">
-          <div className="h-4 bg-blue-200 rounded-md"></div>
-          <div className="h-4 bg-indigo-200 rounded-md"></div>
-          <div className="h-4 bg-purple-200 rounded-md"></div>
-          <div className="h-4 bg-fuchsia-200 rounded-md"></div>
-          <div className="h-4 bg-pink-200 rounded-md"></div>
-          <div className="h-4 bg-amber-200 rounded-md"></div>
-        </div>
-      </footer>
+      <TerminalFooter />
     </div>
   );
 }
