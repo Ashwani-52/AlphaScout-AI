@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AnimatedGridPattern } from './components/ui/animated-grid-pattern';
 import { cn } from './lib/utils';
 import Briefing from './components/Briefing';
-import TerminalFooter from './components/TerminalFooter';
 
 export default function App() {
   const [ticker, setTicker] = useState('');
@@ -52,7 +51,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col justify-between overflow-x-hidden">
+    <div className="relative min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col justify-start overflow-x-hidden">
       
       {/* Premium Light-Mode Animated Grid Background */}
       <AnimatedGridPattern
@@ -80,7 +79,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="w-full mx-auto px-6 pt-12 pb-24 z-10 flex-1 flex flex-col items-center text-center">
+      <main className="w-full mx-auto px-6 pt-12 pb-6 z-10 flex flex-col items-center text-center">
         <h1 className="text-5xl md:text-6xl font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
           Your next-level <br />
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
@@ -139,7 +138,6 @@ export default function App() {
         {analysis && <Briefing result={analysis} />}
       </main>
 
-      <TerminalFooter />
     </div>
   );
 }

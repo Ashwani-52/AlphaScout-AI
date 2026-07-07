@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import { getStockData } from './src/services/stockService.js';
+import { getStockData, getRealMarketMovers, getRealSectorTrending } from './src/services/stockService.js';
 import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
@@ -123,6 +123,28 @@ app.get('/api/live-ticker/:symbol', async (req, res) => {
   } catch (error) {
     console.error(`[Finnhub Proxy] Fetch failure for ${req.params.symbol}:`, error.message);
     res.status(500).json({ error: "Failed to fetch live stock quote." });
+  }
+});
+
+// Real-time Top Movers Endpoint
+app.get('/api/market/movers', async (req, res) => {
+  try {
+    const data = await getRealMarketMovers();
+    res.json(data);
+  } catch (error) {
+    console.error('[Server] Movers fetch failed:', error);
+    res.status(500).json({ error: 'Failed to fetch movers data' });
+  }
+});
+
+// Real-time Sector ETF Performance Endpoint
+app.get('/api/market/sectors', async (req, res) => {
+  try {
+    const data = await getRealSectorTrending();
+    res.json(data);
+  } catch (error) {
+    console.error('[Server] Sector trending fetch failed:', error);
+    res.status(500).json({ error: 'Failed to fetch sectors data' });
   }
 });
 
