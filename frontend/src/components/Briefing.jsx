@@ -7,6 +7,24 @@ import SectorTrending from './SectorTrending';
 
 
 // Beginner-friendly financial glossary definitions
+const getCompanyDomain = (symbol) => {
+  const clean = symbol.toUpperCase();
+  const map = {
+    'SPY': 'spglobal.com',
+    'QQQ': 'invesco.com',
+    'NVDA': 'nvidia.com',
+    'MSFT': 'microsoft.com',
+    'BTC': 'bitcoin.org',
+    'AAPL': 'apple.com',
+    'AMZN': 'amazon.com',
+    'META': 'meta.com',
+    'GOOG': 'google.com',
+    'TSLA': 'tesla.com',
+    'NFLX': 'netflix.com',
+    'AMD': 'amd.com'
+  };
+  return map[clean] || `${clean.toLowerCase()}.com`;
+};
 const RISK_GLOSSARY = {
   "systematic asset volatility": "Market-wide swings caused by major economic events (like inflation shifts or elections) that affect almost all stocks simultaneously, regardless of how stable this specific company is.",
   "macro systematic asset volatility": "Market-wide swings caused by major economic events (like inflation shifts or elections) that affect almost all stocks simultaneously, regardless of how stable this specific company is.",
@@ -265,9 +283,19 @@ export default function Briefing({ result }) {
             <div className="ticker-stream-list">
               {liveStocks.map((stock) => (
                 <div key={stock.symbol} className={`ticker-stream-item alert-${stock.status}`}>
-                  <div className="ticker-item-profile">
-                    <span className="ticker-symbol-txt">{stock.symbol}</span>
-                    <span className="ticker-name-txt">{stock.name}</span>
+                  <div className="ticker-item-profile" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div className="brand-avatar-container" style={{ width: '28px', height: '28px', borderRadius: '6px', minWidth: '28px', padding: '2px', boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+                      <img 
+                        src={`https://www.google.com/s2/favicons?domain=${getCompanyDomain(stock.symbol)}&sz=64`} 
+                        alt={stock.name}
+                        onError={(e) => { e.target.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop&q=60`; }}
+                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                      <span className="ticker-symbol-txt" style={{ lineHeight: '1.2' }}>{stock.symbol}</span>
+                      <span className="ticker-name-txt" style={{ fontSize: '0.7rem', opacity: 0.8 }}>{stock.name}</span>
+                    </div>
                   </div>
                   <div className="ticker-item-metrics">
                     <span className="ticker-price-txt">${stock.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
@@ -303,8 +331,20 @@ export default function Briefing({ result }) {
         {/* COLUMN 3: RIGHT PANEL - INFORMATION REGISTRY */}
         <div className="dashboard-sidebar-column">
           <section className="dashboard-card asset-identity-card">
-            <span className="ticker-badge-pill">{result.ticker}</span>
-            <h3 className="asset-profile-name">{result.companyName}</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div className="brand-avatar-container" style={{ width: '40px', height: '40px', borderRadius: '8px', padding: '4px', border: '1px solid #e2e8f0' }}>
+                <img 
+                  src={`https://www.google.com/s2/favicons?domain=${getCompanyDomain(result.ticker)}&sz=128`} 
+                  alt={result.companyName}
+                  onError={(e) => { e.target.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop&q=60`; }}
+                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                />
+              </div>
+              <div style={{ textAlign: 'left' }}>
+                <span className="ticker-badge-pill" style={{ margin: 0 }}>{result.ticker}</span>
+                <h3 className="asset-profile-name" style={{ margin: '4px 0 0 0', fontSize: '1.15rem', fontWeight: 700 }}>{result.companyName}</h3>
+              </div>
+            </div>
             <span className="section-label">Company Profile</span>
             <p className="sidebar-narrative">{result.overview}</p>
           </section>

@@ -1,3 +1,22 @@
+const getCompanyDomain = (symbol) => {
+  const clean = symbol.toUpperCase();
+  const map = {
+    'SPY': 'spglobal.com',
+    'QQQ': 'invesco.com',
+    'NVDA': 'nvidia.com',
+    'MSFT': 'microsoft.com',
+    'BTC': 'bitcoin.org',
+    'AAPL': 'apple.com',
+    'AMZN': 'amazon.com',
+    'META': 'meta.com',
+    'GOOG': 'google.com',
+    'TSLA': 'tesla.com',
+    'NFLX': 'netflix.com',
+    'AMD': 'amd.com'
+  };
+  return map[clean] || `${clean.toLowerCase()}.com`;
+};
+
 function formatMarketCap(cap) {
   if (!cap) return 'N/A';
   if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
@@ -29,8 +48,20 @@ export default function ComparisonTable({ peers, available }) {
           {peers.map((p) => (
             <tr key={p.symbol} className="border-t border-slate-100 hover:bg-slate-50/40 transition-colors">
               <td className="px-4 py-3">
-                <span className="peer-symbol font-semibold text-slate-800 block">{p.symbol}</span>
-                <span className="peer-name text-xs text-slate-400 block">{p.name}</span>
+                <div className="company-profile-cell" style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' }}>
+                  <div className="brand-avatar-container" style={{ width: '28px', height: '28px', borderRadius: '6px', minWidth: '28px', padding: '2px', boxShadow: 'none', border: '1px solid #e2e8f0' }}>
+                    <img 
+                      src={`https://www.google.com/s2/favicons?domain=${getCompanyDomain(p.symbol)}&sz=64`} 
+                      alt={p.name}
+                      onError={(e) => { e.target.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop&q=60`; }}
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    />
+                  </div>
+                  <div>
+                    <span className="peer-symbol font-semibold text-slate-800 block" style={{ display: 'block' }}>{p.symbol}</span>
+                    <span className="peer-name text-xs text-slate-400 block" style={{ display: 'block' }}>{p.name}</span>
+                  </div>
+                </div>
               </td>
               <td className="px-4 py-3 text-slate-700">{p.price != null ? `$${p.price.toFixed(2)}` : 'N/A'}</td>
               <td className={`px-4 py-3 font-medium ${p.changePercent >= 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
