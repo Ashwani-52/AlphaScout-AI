@@ -62,6 +62,7 @@ export async function runResearchAgent(ticker, onStep = () => {}) {
     fundamentals: stockData.fundamentals,
     historicalPrices,
     sentiment,
+    news: news || [],
     peers: peerData.available ? peerData.peers : [],
     peersAvailable: peerData.available,
     overview: report.overview,
