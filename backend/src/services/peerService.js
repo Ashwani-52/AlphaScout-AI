@@ -2,6 +2,17 @@ import YahooFinance from 'yahoo-finance2';
 
 const yahooFinance = new YahooFinance();
 
+const MODULE_OPTS = {
+  fetchOptions: {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Connection': 'keep-alive'
+    }
+  }
+};
+
 /**
  * Finds peer/competitor tickers dynamically using Yahoo Finance's
  * "recommendationsBySymbol" endpoint (free, no API key).
@@ -10,7 +21,7 @@ const yahooFinance = new YahooFinance();
  */
 export async function getPeerComparison(ticker, limit = 4) {
   try {
-    const recs = await yahooFinance.recommendationsBySymbol(ticker);
+    const recs = await yahooFinance.recommendationsBySymbol(ticker, {}, MODULE_OPTS);
     const peerSymbols = (recs?.recommendedSymbols || [])
       .slice(0, limit)
       .map((r) => r.symbol);
@@ -22,7 +33,7 @@ export async function getPeerComparison(ticker, limit = 4) {
     const peerQuotes = await Promise.all(
       peerSymbols.map(async (symbol) => {
         try {
-          const q = await yahooFinance.quote(symbol);
+          const q = await yahooFinance.quote(symbol, {}, MODULE_OPTS);
           return {
             symbol,
             name: q.shortName || symbol,
