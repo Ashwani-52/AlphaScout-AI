@@ -5,6 +5,7 @@ import FloatingChatbot from './FloatingChatbot';
 import TopMovers from './TopMovers';
 import SectorTrending from './SectorTrending';
 import SentimentDial from './SentimentDial';
+import MarketAnchors from './MarketAnchors';
 
 
 // Beginner-friendly financial glossary definitions
@@ -130,69 +131,7 @@ export default function Briefing({ result }) {
   // backend environment configuration
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
-  // 1. Core Live Watchlist Setup with initial baseline fallbacks
-  const [liveStocks, setLiveStocks] = useState([
-    { symbol: 'SPY', name: 'S&P 500 Index', price: 5422.10, change: 0.34, status: 'up' },
-    { symbol: 'QQQ', name: 'NASDAQ 100', price: 19640.45, change: 0.82, status: 'up' },
-    { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 124.25, change: 2.41, status: 'up' },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 418.90, change: -0.15, status: 'down' },
-    { symbol: 'BTC', name: 'Bitcoin Proxy', price: 61450.00, change: -1.24, status: 'down' }
-  ]);
 
-  // 2. Production Fetch Mechanism hitting your Render backend proxy route
-  const fetchRealTimeMetrics = async () => {
-    try {
-      const stocksToFetch = [
-        { symbol: 'SPY', name: 'S&P 500 Index' },
-        { symbol: 'QQQ', name: 'NASDAQ 100' },
-        { symbol: 'NVDA', name: 'NVIDIA Corp.' },
-        { symbol: 'MSFT', name: 'Microsoft Corp.' },
-        { symbol: 'BTC', name: 'Bitcoin Proxy' }
-      ];
-
-      const updatedStocks = await Promise.all(
-        stocksToFetch.map(async (stock) => {
-          try {
-            const response = await fetch(`${backendUrl}/api/live-ticker/${stock.symbol}`);
-            if (!response.ok) {
-              throw new Error(`HTTP status ${response.status}`);
-            }
-            const data = await response.json();
-            return {
-              ...stock,
-              price: parseFloat(data.price.toFixed(2)),
-              change: parseFloat(data.changePercent.toFixed(2)),
-              status: data.changePercent >= 0 ? 'up' : 'down'
-            };
-          } catch (err) {
-            console.error(`Failed live sync alignment for ${stock.symbol}:`, err.message);
-            // Return null price to flag error/fallback merge
-            return { ...stock, price: -1, change: 0, status: 'up' };
-          }
-        })
-      );
-
-      // Merge fetched results with current state (keep old value if fetch failed)
-      setLiveStocks(prevStocks => {
-        return prevStocks.map((oldStock, idx) => {
-          const fetched = updatedStocks[idx];
-          if (fetched && fetched.price > 0) {
-            return fetched;
-          }
-          return oldStock;
-        });
-      });
-    } catch (globalErr) {
-      console.error("Watchlist refresh dispatch interrupted:", globalErr.message);
-    }
-  };
-
-  // 3. Automated Sync Synchronizer Engine (60s Cadence)
-  useEffect(() => {
-    fetchRealTimeMetrics();
-    const liveUpdateInterval = setInterval(fetchRealTimeMetrics, 60000);
-    return () => clearInterval(liveUpdateInterval);
-  }, []);
 
   // Scans paragraph text and converts recognized financial jargon into interactive elements
   const renderInteractiveNarrative = (text) => {
@@ -268,41 +207,7 @@ export default function Briefing({ result }) {
         
         {/* COLUMN 1: NEW LEFT-SIDE LIVE MARKET STREAMER */}
         <div className="dashboard-left-column">
-          <div className="dashboard-card live-tracker-card">
-            <div className="live-header-row">
-              <span className="live-pulse-node"></span>
-              <span className="section-label">Live Core Watchlist</span>
-            </div>
-            <p className="live-subtitle">Streaming data ticks simulated via internal ticker module execution.</p>
-            
-            <div className="ticker-stream-list">
-              {liveStocks.map((stock) => (
-                <div key={stock.symbol} className={`ticker-stream-item alert-${stock.status}`}>
-                  <div className="ticker-item-profile" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div className="brand-avatar-container" style={{ width: '28px', height: '28px', borderRadius: '6px', minWidth: '28px', padding: '2px', boxShadow: 'none', border: '1px solid #e2e8f0' }}>
-                      <img 
-                        src={`https://www.google.com/s2/favicons?domain=${getCompanyDomain(stock.symbol)}&sz=64`} 
-                        alt={stock.name}
-                        onError={(e) => { e.target.src = `https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=50&auto=format&fit=crop&q=60`; }}
-                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                      />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <span className="ticker-symbol-txt" style={{ lineHeight: '1.2' }}>{stock.symbol}</span>
-                      <span className="ticker-name-txt" style={{ fontSize: '0.7rem', opacity: 0.8 }}>{stock.name}</span>
-                    </div>
-                  </div>
-                  <div className="ticker-item-metrics">
-                    <span className="ticker-price-txt">${stock.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
-                    <span className={`ticker-change-pct ${stock.status}`}>
-                      {stock.change >= 0 ? '+' : ''}{stock.change}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          <MarketAnchors />
           <SectorTrending />
         </div>
 

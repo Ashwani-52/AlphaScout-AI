@@ -6,6 +6,7 @@ import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 import sectorsRoute from './src/routes/sectors.js';
+import { WebSocketServer } from 'ws';
 
 // Bypass SSL verification globally in development to prevent corporate SSL inspection/Zscaler proxies from breaking fetches
 if (process.env.NODE_ENV !== 'production') {
@@ -129,6 +130,48 @@ app.get('/api/market/movers', async (req, res) => {
 
 
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 AlphaScout Node Backend listening on port ${PORT}`);
+});
+
+// Setup WebSocket Server for Live Market Indices Updates
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  console.log('[WS] Client connected to live market index feed');
+  
+  const sendUpdate = async () => {
+    try {
+      const symbols = ["^NSEI", "^NSEBANK", "^CNXFIN", "^CNXMID"];
+      const indicesData = await Promise.all(
+        symbols.map(async (symbol) => {
+          try {
+            const quote = await getLiveQuote(symbol);
+            return {
+              symbol,
+              price: quote.price || 0,
+              changePercent: quote.changePercent || 0
+            };
+          } catch (err) {
+            return { symbol, price: 0, changePercent: 0 };
+          }
+        })
+      );
+      if (ws.readyState === ws.OPEN) {
+        ws.send(JSON.stringify(indicesData));
+      }
+    } catch (err) {
+      console.error('[WS] Error fetching index quotes:', err);
+    }
+  };
+
+  sendUpdate();
+
+  // Send updates periodically every 10 seconds
+  const intervalId = setInterval(sendUpdate, 10000);
+
+  ws.on('close', () => {
+    console.log('[WS] Client disconnected from live market index feed');
+    clearInterval(intervalId);
+  });
 });
