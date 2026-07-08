@@ -6,6 +6,7 @@ import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 import sectorsRoute from './src/routes/sectors.js';
+import marketRoute from './src/routes/market.js';
 import { WebSocketServer } from 'ws';
 
 // Bypass SSL verification globally in development to prevent corporate SSL inspection/Zscaler proxies from breaking fetches
@@ -26,6 +27,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/chat', chatRoute);
 app.use('/api/market/sectors', sectorsRoute);
+app.use('/api/market', marketRoute);
 
 // Root health check route
 app.get('/', (req, res) => {

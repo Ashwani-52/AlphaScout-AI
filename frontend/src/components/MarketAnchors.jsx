@@ -1,80 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUpRight, ArrowDownRight, Activity } from 'lucide-react';
 
-const SCALE_MAP = {
-  '^NSEI': { name: 'NIFTY 50', base: 24442.65, factor: 21.18 },
-  '^NSEBANK': { name: 'BANK NIFTY', base: 52444.30, factor: 196.88 },
-  '^CNXFIN': { name: 'NIFTY FIN SERVICE', base: 23612.15, factor: 24.36 },
-  '^CNXMID': { name: 'NIFTY MIDCAP 100', base: 55840.90, factor: 59.63 }
-};
-
 export default function MarketAnchors() {
-  const [indices, setIndices] = useState([
-    { id: '^NSEI', name: 'NIFTY 50', value: '24,442.65', pct: '+0.05%', isPositive: true },
-    { id: '^NSEBANK', name: 'BANK NIFTY', value: '52,444.30', pct: '-0.35%', isPositive: false },
-    { id: '^CNXFIN', name: 'NIFTY FIN SERVICE', value: '23,612.15', pct: '+0.40%', isPositive: true },
-    { id: '^CNXMID', name: 'NIFTY MIDCAP 100', value: '55,840.90', pct: '+0.56%', isPositive: true }
-  ]);
+  const [indices, setIndices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
-  // Derive WebSocket URL from Backend URL
-  const wsUrl = backendUrl.replace(/^http/, 'ws');
 
   useEffect(() => {
-    console.log('[MarketAnchors] Connecting to live WebSocket index stream at:', wsUrl);
-    let ws;
-    let reconnectTimeout;
-
-    const connect = () => {
-      ws = new WebSocket(wsUrl);
-
-      ws.onmessage = (event) => {
-        try {
-          const rawData = JSON.parse(event.data);
-          if (Array.isArray(rawData)) {
-            const updated = rawData.map((item) => {
-              const scale = SCALE_MAP[item.symbol] || { name: item.symbol, base: item.price, factor: 1 };
-              const scaledPrice = item.price * scale.factor;
-              const isPositive = item.changePercent >= 0;
-              const formattedPrice = new Intl.NumberFormat('en-IN', {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2
-              }).format(scaledPrice);
-
-              return {
-                id: item.symbol,
-                name: scale.name,
-                value: formattedPrice,
-                pct: `${isPositive ? '+' : ''}${item.changePercent.toFixed(2)}%`,
-                isPositive
-              };
-            });
-            setIndices(updated);
-          }
-        } catch (err) {
-          console.error('[MarketAnchors] Error parsing WS payload:', err);
+    const fetchLiveIndices = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/market/indices`);
+        if (!res.ok) {
+          throw new Error(`HTTP status ${res.status}`);
         }
-      };
-
-      ws.onerror = (error) => {
-        console.error('[MarketAnchors] WebSocket error:', error);
-      };
-
-      ws.onclose = () => {
-        console.log('[MarketAnchors] WebSocket connection closed. Reconnecting in 5s...');
-        reconnectTimeout = setTimeout(connect, 5000);
-      };
-    };
-
-    connect();
-
-    return () => {
-      if (ws) {
-        ws.close();
+        const data = await res.json();
+        setIndices(data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error connecting to live index feed:", err);
       }
-      clearTimeout(reconnectTimeout);
     };
-  }, [wsUrl]);
+
+    fetchLiveIndices();
+    // Refresh numbers every 60 seconds automatically
+    const interval = setInterval(fetchLiveIndices, 60000);
+    return () => clearInterval(interval);
+  }, [backendUrl]);
+
+  if (loading) {
+    return <div className="p-6 text-center text-xs text-slate-400">Syncing live NSE indices...</div>;
+  }
 
   return (
     <div className="w-full rounded-3xl border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
@@ -90,7 +46,7 @@ export default function MarketAnchors() {
           </h3>
         </div>
         <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">
-          NSE Live
+          NSE Live Feed
         </span>
       </div>
 
