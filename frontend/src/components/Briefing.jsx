@@ -4,6 +4,7 @@ import ComparisonTable from './ComparisonTable';
 import FloatingChatbot from './FloatingChatbot';
 import TopMovers from './TopMovers';
 import SectorTrending from './SectorTrending';
+import SentimentDial from './SentimentDial';
 
 
 // Beginner-friendly financial glossary definitions
@@ -255,18 +256,12 @@ export default function Briefing({ result }) {
   return (
     <div ref={containerRef} className="dashboard-container">
       
-      {/* ACTION VERDICT BANNER */}
-      <div className={`action-banner ${signal.cls}`}>
-        <div className="action-banner-meta">
-          <span className="action-tag">System Directive</span>
-          <h2 className="action-title">{signal.text}</h2>
-          <p className="action-desc">{result.verdict ? `${result.verdict}. ${signal.desc}` : signal.desc}</p>
-        </div>
-        <div className="action-badge-box">
-          <span className="action-label">EXECUTION SIGNAL</span>
-          <div className="action-button-simulation">{signal.action}</div>
-        </div>
-      </div>
+      {/* INTERACTIVE SENTIMENT DIAL SLIDER */}
+      <SentimentDial 
+        initialScore={result.dialScore} 
+        initialReasoning={result.dialReasoning} 
+        verdict={result.verdict} 
+      />
 
       {/* 🌟 UPGRADED TRIPLE COLUMN SYSTEM GRID */}
       <div className="dashboard-grid-layout">
@@ -307,6 +302,8 @@ export default function Briefing({ result }) {
               ))}
             </div>
           </div>
+
+          <SectorTrending />
         </div>
 
         {/* COLUMN 2: CENTER PANEL - MAIN ANALYTICAL VECTORS */}
@@ -388,7 +385,6 @@ export default function Briefing({ result }) {
             </div>
           </section>
           
-          <SectorTrending />
         </div>
 
       </div>
