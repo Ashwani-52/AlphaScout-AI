@@ -1867,7 +1867,93 @@
     width: 100% !important;
   }
 }
+/* ==========================================================================
+   STATE-DRIVEN APP CANVASES
+   ========================================================================== */
 
+/* Base container sizing template */
+.app-canvas-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  transition: background 0.4s ease-in-out, background-color 0.4s ease-in-out;
+}
 
+/* STATE A: LANDING PAGE BACKGROUND (From Uiverse.io by kencode7) */
+.app-canvas-container.landing-grid-view {
+  background: linear-gradient(
+      to bottom,
+      #fff 0%,
+      #fff 40%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(to right, #0ed2da, #5f29c7);
+}
 
+/* Vertical grid strip lines generation */
+.app-canvas-container.landing-grid-view::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(90deg, #ccc 1px, transparent 1px);
+  background-size: 50px 100%;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
 
+/* STATE B: POST-SEARCH ACTIVE DASHBOARD BACKGROUND */
+.app-canvas-container.has-searched {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+/* Ensure background grid lines are completely destroyed when dashboard is up */
+.app-canvas-container.has-searched::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* Ensure content renders cleanly over your background grid alignment layer */
+.content-chassis {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* Simple helper layout animation for your incoming dashboard blocks */
+.dashboard-grid-fadein {
+  animation: dashboardReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dashboardReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Temporary debug button styling */
+.back-debug-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
+  transition: all 0.2s;
+}
+.back-debug-btn:hover { background: #e2e8f0; color: #334155; }
