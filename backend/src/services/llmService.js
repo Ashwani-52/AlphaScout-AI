@@ -45,7 +45,7 @@ export async function generateReport({ ticker, stockData, sentiment, peers }) {
       risks: `Primary risks include macro risk from inflation, liquidity constraints in secondary market systems, and macro systematic asset volatility.`,
       verdict: `Hold — Solid business fundamentals with stable metrics, balanced by near-term valuation constraints.`,
       dialScore: 10,
-      dialReasoning: `NVIDIA maintains positive news sentiment indicators, offsetting macro systematic volatility constraints.`
+      dialReasoning: `${stockData.name || ticker} maintains positive news sentiment indicators, offsetting macro systematic volatility constraints.`
     };
   }
 }
