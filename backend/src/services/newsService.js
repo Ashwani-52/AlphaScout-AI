@@ -28,8 +28,8 @@ export async function getCompanyNews(ticker) {
       pubDate: item.pubDate
     }));
   } catch (error) {
-    console.error(`[NewsService] Error fetching news for ${cleanTicker}:`, error);
-    throw new Error(`Google News RSS failed for '${cleanTicker}': ${error.message}`);
+    console.warn(`[NewsService] Error fetching news for ${cleanTicker}: ${error.message}. Degrading gracefully with empty news array.`);
+    return [];
   }
 }
 

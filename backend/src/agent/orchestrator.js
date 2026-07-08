@@ -1,4 +1,4 @@
-import { getStockData, getHistoricalPrices } from '../services/stockService.js';
+import { getStockData, getHistoricalPrices, resolveTicker } from '../services/stockService.js';
 import { getNews } from '../services/newsService.js';
 import { getSentiment } from '../services/sentimentService.js';
 import { getPeerComparison } from '../services/peerService.js';
@@ -9,15 +9,15 @@ import { generateReport } from '../services/llmService.js';
  * Runs fetches concurrently and streams step callbacks.
  */
 export async function runResearchAgent(ticker, onStep = () => {}) {
-  const cleanTicker = ticker.trim().toUpperCase();
+  const resolvedTicker = await resolveTicker(ticker);
 
-  onStep(`Searching global database for ticker symbol: ${cleanTicker}...`);
+  onStep(`Searching global database for ticker symbol: ${resolvedTicker}...`);
 
   // Parallel data gathering
-  const stockDataPromise = getStockData(cleanTicker);
-  const newsPromise = getNews(cleanTicker);
-  const historicalPricesPromise = getHistoricalPrices(cleanTicker, '3mo');
-  const peerDataPromise = getPeerComparison(cleanTicker);
+  const stockDataPromise = getStockData(resolvedTicker);
+  const newsPromise = getNews(resolvedTicker);
+  const historicalPricesPromise = getHistoricalPrices(resolvedTicker, '3mo');
+  const peerDataPromise = getPeerComparison(resolvedTicker);
 
   const [stockData, news, historicalPrices, peerData] = await Promise.all([
     stockDataPromise,
@@ -27,7 +27,7 @@ export async function runResearchAgent(ticker, onStep = () => {}) {
   ]);
 
   if (!stockData) {
-    throw new Error(`No data found for ticker "${cleanTicker}". Check the symbol and try again.`);
+    throw new Error(`No data found for ticker "${resolvedTicker}". Check the symbol and try again.`);
   }
 
   onStep(`Scanning regulatory filings, recent 10-K logs, and financial news...`);
@@ -42,7 +42,7 @@ export async function runResearchAgent(ticker, onStep = () => {}) {
 
   onStep(`Feeding aggregated parameters into Hugging Face model clusters...`);
   const report = await generateReport({
-    ticker: cleanTicker,
+    ticker: resolvedTicker,
     stockData,
     sentiment,
     peers: peerData.peers,
@@ -53,7 +53,7 @@ export async function runResearchAgent(ticker, onStep = () => {}) {
 
   // Assemble and return the complete payload
   return {
-    ticker: cleanTicker,
+    ticker: resolvedTicker,
     companyName: stockData.name,
     priceSummary: {
       current: stockData.price,
@@ -70,5 +70,7 @@ export async function runResearchAgent(ticker, onStep = () => {}) {
     peerStanding: report.peerStanding,
     risks: report.risks,
     verdict: report.verdict,
+    dialScore: report.dialScore ?? 0,
+    dialReasoning: report.dialReasoning ?? '',
   };
 }

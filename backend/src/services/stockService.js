@@ -3,6 +3,33 @@ import YahooFinance from 'yahoo-finance2';
 const yahooFinance = new YahooFinance();
 
 /**
+ * Automatically resolves a stock ticker to its correct suffix format if required.
+ * Handles Indian market fallbacks (NSE exchange suffix '.NS') when a standalone search fails.
+ */
+export async function resolveTicker(ticker) {
+  if (!ticker || typeof ticker !== 'string') return '';
+  const clean = ticker.trim().toUpperCase();
+  const symbol = clean === 'BTC' ? 'BTC-USD' : clean;
+
+  try {
+    const quote = await yahooFinance.quote(symbol);
+    if (quote) return symbol;
+  } catch (err) {
+    if (!symbol.includes('.')) {
+      try {
+        const fallback = `${symbol}.NS`;
+        console.log(`[StockService] Standalone quote check failed for ${symbol}. Trying Indian Market fallback: ${fallback}`);
+        const quoteFallback = await yahooFinance.quote(fallback);
+        if (quoteFallback) return fallback;
+      } catch (e) {
+        // Fallback failed too
+      }
+    }
+  }
+  return symbol;
+}
+
+/**
  * Fetches real market data for a given stock ticker from Yahoo Finance.
  * Matches the format expected by the orchestrator and briefing prompt.
  * @param {string} ticker - The stock ticker symbol (e.g., 'AAPL', 'MSFT').
@@ -13,17 +40,17 @@ export async function getStockData(ticker) {
     throw new Error('A valid string ticker symbol must be provided.');
   }
 
-  const cleanTicker = ticker.trim().toUpperCase();
+  const resolvedTicker = await resolveTicker(ticker);
 
   try {
-    const result = await yahooFinance.quote(cleanTicker);
+    const result = await yahooFinance.quote(resolvedTicker);
     
     if (!result) {
-      throw new Error(`No quote data returned for symbol: ${cleanTicker}`);
+      throw new Error(`No quote data returned for symbol: ${resolvedTicker}`);
     }
 
     return {
-      name: result.shortName || result.longName || cleanTicker,
+      name: result.shortName || result.longName || resolvedTicker,
       price: result.regularMarketPrice ?? null,
       changePercent: result.regularMarketChangePercent ?? 0,
       fundamentals: {
@@ -33,8 +60,8 @@ export async function getStockData(ticker) {
       }
     };
   } catch (error) {
-    console.error(`[StockService] Error fetching data for ticker ${cleanTicker}:`, error);
-    throw new Error(`Yahoo Finance failed for '${cleanTicker}': ${error.message}`);
+    console.error(`[StockService] Error fetching data for ticker ${resolvedTicker}:`, error);
+    throw new Error(`Yahoo Finance failed for '${resolvedTicker}': ${error.message}`);
   }
 }
 
@@ -83,8 +110,8 @@ export async function getHistoricalPrices(ticker, range = '3mo') {
  * from your full getStockData() so chat replies stay quick.
  */
 export async function getLiveQuote(ticker) {
-  const symbol = ticker === 'BTC' ? 'BTC-USD' : ticker;
-  const q = await yahooFinance.quote(symbol);
+  const resolvedTicker = await resolveTicker(ticker);
+  const q = await yahooFinance.quote(resolvedTicker);
   return {
     price: q.regularMarketPrice,
     changePercent: q.regularMarketChangePercent !== undefined ? parseFloat(q.regularMarketChangePercent.toFixed(2)) : 0,

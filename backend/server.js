@@ -6,6 +6,12 @@ import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 
+// Bypass SSL verification globally in development to prevent corporate SSL inspection/Zscaler proxies from breaking fetches
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  console.log('🛡️ [Server] Development environment detected: SSL verification checks disabled globally.');
+}
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 

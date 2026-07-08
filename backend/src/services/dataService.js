@@ -1,3 +1,4 @@
+import { resolveTicker } from './stockService.js';
 import YahooFinance from 'yahoo-finance2';
 import Parser from 'rss-parser';
 
@@ -14,13 +15,13 @@ export async function getStockMetrics(ticker) {
     throw new Error('A valid string ticker symbol must be provided.');
   }
 
-  const cleanTicker = ticker.trim().toUpperCase();
+  const resolvedTicker = await resolveTicker(ticker);
 
   try {
-    const result = await yahooFinance.quote(cleanTicker);
+    const result = await yahooFinance.quote(resolvedTicker);
     
     if (!result) {
-      throw new Error(`No quote data returned for symbol: ${cleanTicker}`);
+      throw new Error(`No quote data returned for symbol: ${resolvedTicker}`);
     }
 
     return {
@@ -31,8 +32,8 @@ export async function getStockMetrics(ticker) {
       fiftyTwoWeekLow: result.fiftyTwoWeekLow
     };
   } catch (error) {
-    console.error(`[DataService] Error in getStockMetrics for ${cleanTicker}:`, error);
-    throw new Error(`Yahoo Finance failed for '${cleanTicker}': ${error.message}`);
+    console.error(`[DataService] Error in getStockMetrics for ${resolvedTicker}:`, error);
+    throw new Error(`Yahoo Finance failed for '${resolvedTicker}': ${error.message}`);
   }
 }
 
@@ -46,8 +47,8 @@ export async function getMarketNews(ticker) {
     throw new Error('A valid string ticker symbol must be provided.');
   }
 
-  const cleanTicker = ticker.trim().toUpperCase();
-  const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cleanTicker)}+stock&hl=en-US&gl=US&ceid=US:en`;
+  const resolvedTicker = await resolveTicker(ticker);
+  const feedUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(resolvedTicker)}+stock&hl=en-US&gl=US&ceid=US:en`;
 
   try {
     const feed = await parser.parseURL(feedUrl);
@@ -59,7 +60,7 @@ export async function getMarketNews(ticker) {
     // Extract top 3 headline titles
     return feed.items.slice(0, 3).map((item) => item.title);
   } catch (error) {
-    console.error(`[DataService] Error in getMarketNews for ${cleanTicker}:`, error);
-    throw new Error(`Google News RSS failed for '${cleanTicker}': ${error.message}`);
+    console.warn(`[DataService] Error in getMarketNews for ${resolvedTicker}: ${error.message}. Degrading gracefully with empty news array.`);
+    return [];
   }
 }
