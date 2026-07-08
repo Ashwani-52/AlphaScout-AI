@@ -5,6 +5,7 @@ import { getStockData, getRealMarketMovers, getRealSectorTrending, getLiveQuote 
 import { getCompanyNews } from './src/services/newsService.js';
 import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
+import sectorsRoute from './src/routes/sectors.js';
 
 // Bypass SSL verification globally in development to prevent corporate SSL inspection/Zscaler proxies from breaking fetches
 if (process.env.NODE_ENV !== 'production') {
@@ -23,6 +24,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api/chat', chatRoute);
+app.use('/api/market/sectors', sectorsRoute);
 
 // Root health check route
 app.get('/', (req, res) => {
@@ -125,16 +127,7 @@ app.get('/api/market/movers', async (req, res) => {
   }
 });
 
-// Real-time Sector ETF Performance Endpoint
-app.get('/api/market/sectors', async (req, res) => {
-  try {
-    const data = await getRealSectorTrending();
-    res.json(data);
-  } catch (error) {
-    console.error('[Server] Sector trending fetch failed:', error);
-    res.status(500).json({ error: 'Failed to fetch sectors data' });
-  }
-});
+
 
 app.listen(PORT, () => {
   console.log(`🚀 AlphaScout Node Backend listening on port ${PORT}`);
