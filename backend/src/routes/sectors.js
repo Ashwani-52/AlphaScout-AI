@@ -5,20 +5,28 @@ const router = express.Router();
 
 const SECTORS_CONFIG = [
   {
-    name: "Technology & Semiconductors",
-    tickers: ["NVDA", "MSFT", "AAPL", "WIPRO.NS", "INFY.NS"]
+    name: "Furniture",
+    tickers: ["WSM", "RH", "CENTURYPLY.NS"]
   },
   {
-    name: "Financial Infrastructure",
-    tickers: ["HDFCBANK.NS", "SBIN.NS", "BAC", "JPM"]
+    name: "Rubber Products",
+    tickers: ["GT", "MRF.NS", "APOLLOTYRE.NS"]
   },
   {
-    name: "Energy Systems",
-    tickers: ["RELIANCE.NS", "ADANIGREEN.NS", "XOM", "CVX"]
+    name: "Batteries",
+    tickers: ["ENR", "AMARAJABAT.NS", "EXIDEIND.NS"]
   },
   {
-    name: "Consumer Discretionary",
-    tickers: ["TSLA", "AMZN", "TATAMOTORS.NS"]
+    name: "Oil",
+    tickers: ["XOM", "ONGC.NS", "BPCL.NS"]
+  },
+  {
+    name: "Aviation",
+    tickers: ["DAL", "INDIGO.NS", "AAL"]
+  },
+  {
+    name: "Waste Management",
+    tickers: ["WM", "RSG", "ANTONY.NS"]
   }
 ];
 
