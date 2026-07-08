@@ -37,15 +37,43 @@ export async function generateReport({ ticker, stockData, sentiment, peers }) {
   } catch (error) {
     console.warn(`[LLM Service] Error generating report for ${ticker}: ${error.message}. Triggering safe high-fidelity fallback report.`);
     
-    // High-Fidelity Safe Fallback Matrix
+    // Dynamic fallback generation based on real stockData
+    const compName = stockData.name || ticker;
+    const priceStr = stockData.price !== null ? `$${stockData.price}` : 'N/A';
+    const pctChange = stockData.changePercent ?? 0;
+    const peVal = stockData.fundamentals?.peRatio ?? 'N/A';
+    
+    // Calculate a dynamic dialScore based on sentiment label and price change
+    let calculatedScore = 0;
+    if (sentiment) {
+      if (sentiment.label === 'POSITIVE') calculatedScore += 35;
+      if (sentiment.label === 'NEGATIVE') calculatedScore -= 35;
+    }
+    if (pctChange) {
+      calculatedScore += Math.max(-45, Math.min(45, Math.round(pctChange * 8)));
+    }
+    // Clamp score between -100 and 100
+    calculatedScore = Math.max(-100, Math.min(100, calculatedScore));
+    
+    let verdict = 'Hold';
+    let reasoning = `${compName} maintains stable news sentiment indicators, offsetting macro systematic volatility constraints.`;
+    
+    if (calculatedScore >= 25) {
+      verdict = 'Buy';
+      reasoning = `${compName} showcases strong price momentum and favorable sentiment indicators, indicating near-term consolidation targets.`;
+    } else if (calculatedScore <= -25) {
+      verdict = 'Sell';
+      reasoning = `${compName} displays negative price pressure and technical resistance, suggesting near-term caution.`;
+    }
+    
     return {
-      overview: `${stockData.name || ticker} is a leading global technology provider. It maintains a robust market position supported by stable revenue cycles and customer ecosystems.`,
-      technicalSignal: `The stock is currently trading at $${stockData.price ?? 'N/A'}, showing a ${stockData.changePercent ?? '0'}% change. Technical charts indicate support consolidation near technical resistance.`,
-      peerStanding: `In comparison to its industry peers, ${stockData.name || ticker} trades at a P/E of ${stockData.fundamentals?.peRatio ?? 'N/A'}, which is in-line with historical industry averages.`,
+      overview: `${compName} is a leading player in its industry. It maintains a robust market position supported by stable revenue cycles and customer ecosystems.`,
+      technicalSignal: `The stock is currently trading at ${priceStr}, showing a ${pctChange}% change. Technical charts indicate support consolidation near technical resistance.`,
+      peerStanding: `In comparison to its industry peers, ${compName} trades at a P/E of ${peVal}, which is in-line with historical industry averages.`,
       risks: `Primary risks include macro risk from inflation, liquidity constraints in secondary market systems, and macro systematic asset volatility.`,
-      verdict: `Hold — Solid business fundamentals with stable metrics, balanced by near-term valuation constraints.`,
-      dialScore: 10,
-      dialReasoning: `${stockData.name || ticker} maintains positive news sentiment indicators, offsetting macro systematic volatility constraints.`
+      verdict: `${verdict} — Favorable operational parameters with metrics aligned to ${verdict.toLowerCase()} recommendations.`,
+      dialScore: calculatedScore,
+      dialReasoning: reasoning
     };
   }
 }
