@@ -232,8 +232,8 @@ export default function Briefing({ result }) {
         {/* COLUMN 3: RIGHT PANEL - INFORMATION REGISTRY */}
         <div className="dashboard-sidebar-column">
           <section className="dashboard-card asset-identity-card">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div className="brand-avatar-container" style={{ width: '40px', height: '40px', borderRadius: '8px', padding: '4px', border: '1px solid #e2e8f0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+              <div className="brand-avatar-container" style={{ width: '42px', height: '42px', borderRadius: '10px', padding: '4px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '42px', backgroundColor: '#ffffff' }}>
                 <img 
                   src={`https://www.google.com/s2/favicons?domain=${getCompanyDomain(result.ticker)}&sz=128`} 
                   alt={result.companyName}
@@ -241,9 +241,9 @@ export default function Briefing({ result }) {
                   style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                 />
               </div>
-              <div style={{ textAlign: 'left' }}>
-                <span className="ticker-badge-pill" style={{ margin: 0 }}>{result.ticker}</span>
-                <h3 className="asset-profile-name" style={{ margin: '4px 0 0 0', fontSize: '1.15rem', fontWeight: 700 }}>{result.companyName}</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '6px', textAlign: 'left', minWidth: 0, flex: 1 }}>
+                <span className="ticker-badge-pill">{result.ticker}</span>
+                <h3 className="asset-profile-name" style={{ wordBreak: 'break-word', lineHeight: '1.25' }}>{result.companyName}</h3>
               </div>
             </div>
             <span className="section-label">Company Profile</span>
