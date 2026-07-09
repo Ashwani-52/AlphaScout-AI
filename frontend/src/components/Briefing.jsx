@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PriceChart from './PriceChart';
 import ComparisonTable from './ComparisonTable';
-import FloatingChatbot from './FloatingChatbot';
 import TopMovers from './TopMovers';
 import SectorTrending from './SectorTrending';
 import SentimentDial from './SentimentDial';
@@ -312,8 +311,7 @@ export default function Briefing({ result }) {
         </div>
       )}
 
-      {/* 🌟 NEW CHATBOT INJECTION ACCUMULATOR NODE */}
-      <FloatingChatbot currentTicker={result.ticker || "the market"} />
+
 
     </div>
   );

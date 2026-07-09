@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AnimatedGridPattern } from './components/ui/animated-grid-pattern';
 import { cn } from './lib/utils';
 import Briefing from './components/Briefing';
+import FloatingChatbot from './components/FloatingChatbot';
 
 export default function App() {
   const [ticker, setTicker] = useState('');
@@ -165,6 +166,9 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Floating chatbot rendered outside any transformed container to keep it fixed in one place */}
+      {analysis && <FloatingChatbot currentTicker={analysis.ticker || "the market"} />}
     </div>
   );
 }
