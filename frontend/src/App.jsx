@@ -91,7 +91,7 @@ export default function App() {
       </header>
 
       {/* Main Viewport Content Chassis */}
-      <main className="content-chassis">
+      <main className={`content-chassis ${hasSearched ? '' : 'landing-chassis'}`}>
         {!hasSearched ? (
           /* INITIAL LANDING PAGE VIEW */
           <div className="flex flex-col items-center text-center">

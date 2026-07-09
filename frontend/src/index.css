@@ -1933,6 +1933,16 @@
   padding: 40px 24px;
 }
 
+.content-chassis.landing-chassis {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 100px);
+  box-sizing: border-box;
+  padding-bottom: 120px;
+}
+
 /* Simple helper layout animation for your incoming dashboard blocks */
 .dashboard-grid-fadein {
   animation: dashboardReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
