@@ -170,8 +170,8 @@ export default function App() {
         />
       )}
 
-      {/* Header Container Layout */}
-      <header className="w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-start z-10">
+      {/* Header Container Layout - absolute positioned on landing, relative on dashboard */}
+      <header className={`w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-start z-30 ${hasSearched ? 'relative' : 'absolute top-0 left-0 right-0'}`}>
         
         {/* Top Left Profile & Persistent History Column Stack */}
         <div className="flex flex-col items-start gap-2 pt-2 z-20">
@@ -281,17 +281,17 @@ export default function App() {
       {/* Main Viewport Content Chassis */}
       <main className={`content-chassis ${hasSearched ? '' : 'landing-chassis'}`}>
         {!hasSearched ? (
-          /* INITIAL LANDING PAGE VIEW */
-          <div className="flex flex-col items-center text-center">
+          /* INITIAL LANDING PAGE VIEW - perfectly centers content horizontally and vertically */
+          <div className="flex flex-col items-center justify-center w-full gap-y-8 text-center">
 
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-tight m-0">
               Your next-level <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                 investment research
               </span> engine.
             </h1>
 
-            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-4 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
+            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md m-0">
               <input 
                 type="text" 
                 placeholder="Enter Stock Ticker (e.g. WIPRO.NS)"
@@ -321,21 +321,23 @@ export default function App() {
             </form>
 
             {/* Live Thought Process Steps Display */}
-            <div className="w-full text-left max-w-xl space-y-3 mt-4 mb-4">
-              {steps.map((step, index) => (
-                <div key={index} className="flex items-center gap-3 bg-white/80 border border-slate-200/60 px-5 py-3 rounded-2xl shadow-sm animate-fade-in">
-                  {index === steps.length - 1 && loading ? (
-                    <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[10px] text-white font-bold">✓</div>
-                  )}
-                  <p className="text-sm font-medium text-slate-700">{step}</p>
-                </div>
-              ))}
-            </div>
+            {steps.length > 0 && (
+              <div className="w-full text-left max-w-xl space-y-3 m-0">
+                {steps.map((step, index) => (
+                  <div key={index} className="flex items-center gap-3 bg-white/80 border border-slate-200/60 px-5 py-3 rounded-2xl shadow-sm animate-fade-in">
+                    {index === steps.length - 1 && loading ? (
+                      <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center text-[10px] text-white font-bold">✓</div>
+                    )}
+                    <p className="text-sm font-medium text-slate-700">{step}</p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {error && (
-              <div className="w-full max-w-xl p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-sm font-medium">
+              <div className="w-full max-w-xl p-4 bg-rose-50 border border-rose-200 text-rose-600 rounded-2xl text-sm font-medium m-0 animate-fade-in">
                 {error}
               </div>
             )}
