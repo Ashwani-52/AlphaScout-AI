@@ -7,6 +7,7 @@ import { runResearchAgent } from './src/agent/orchestrator.js';
 import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 import sectorsRoute from './src/routes/sectors.js';
 import marketRoute from './src/routes/market.js';
+import authRoute from './src/routes/auth.js';
 import { WebSocketServer } from 'ws';
 import { connectDB } from './src/config/db.js';
 
@@ -32,6 +33,7 @@ app.use(express.json());
 app.use('/api/chat', chatRoute);
 app.use('/api/market/sectors', sectorsRoute);
 app.use('/api/market', marketRoute);
+app.use('/api/auth', authRoute);
 
 // Root health check route
 app.get('/', (req, res) => {

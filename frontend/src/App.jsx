@@ -120,7 +120,7 @@ export default function App() {
     };
   };
 
-  const handleGoogleSuccess = (credentialResponse) => {
+  const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
       const googleUser = {
@@ -128,6 +128,20 @@ export default function App() {
         email: decoded.email,
         photoURL: decoded.picture
       };
+
+      // Synchronize user profile with backend MongoDB Atlas database
+      try {
+        await fetch(`${backendUrl}/api/auth/sync`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(googleUser)
+        });
+      } catch (syncErr) {
+        console.error('[App] Failed to sync user profile with database:', syncErr);
+      }
+
       localStorage.setItem('alphascout_user', JSON.stringify(googleUser));
       setUser(googleUser);
       setShowLoginModal(false);
