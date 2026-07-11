@@ -122,33 +122,33 @@ export default function App() {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      const decoded = jwtDecode(credentialResponse.credential);
-      const googleUser = {
-        name: decoded.name,
-        email: decoded.email,
-        photoURL: decoded.picture
-      };
+      // Send OIDC JWT token to backend for verification and DB upsert
+      const res = await fetch(`${backendUrl}/api/auth/google-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: credentialResponse.credential })
+      });
+      const data = await res.json();
 
-      // Synchronize user profile with backend MongoDB Atlas database
-      try {
-        await fetch(`${backendUrl}/api/auth/sync`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(googleUser)
-        });
-      } catch (syncErr) {
-        console.error('[App] Failed to sync user profile with database:', syncErr);
+      if (data.success && data.user) {
+        const googleUser = {
+          name: data.user.name,
+          email: data.user.email,
+          photoURL: data.user.avatar || data.user.photoURL
+        };
+
+        localStorage.setItem('alphascout_user', JSON.stringify(googleUser));
+        setUser(googleUser);
+        setShowLoginModal(false);
+        setError('');
+      } else {
+        setError('Token validation handshake rejected by backend.');
       }
-
-      localStorage.setItem('alphascout_user', JSON.stringify(googleUser));
-      setUser(googleUser);
-      setShowLoginModal(false);
-      setError('');
     } catch (err) {
       console.error('Failed to parse Google OAuth credential:', err);
-      setError('Authentication failed. Could not read user profile.');
+      setError('Authentication failed. Could not verify Google profile with server.');
     }
   };
 

@@ -1,36 +1,42 @@
 import express from 'express';
 import User from '../models/User.js';
+import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-router.post('/sync', async (req, res) => {
-  const { name, email, photoURL } = req.body;
+router.post('/google-login', async (req, res) => {
+  const { token } = req.body;
 
-  if (!email || !name) {
-    return res.status(400).json({ error: 'Name and email are required for syncing.' });
+  if (!token) {
+    return res.status(400).json({ success: false, error: 'Google credential token is required.' });
   }
 
   try {
-    let user = await User.findOne({ email });
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub, name, email, picture } = payload;
 
-    if (!user) {
-      user = await User.create({
-        name,
-        email,
-        photoURL
-      });
-      console.log(`[Auth] Saved new user to MongoDB Atlas: ${email}`);
-    } else {
-      // Update avatar or name if they changed
-      user.name = name;
-      user.photoURL = photoURL;
-      await user.save();
-    }
+    // Perform an atomic upsert operation to avoid duplicates
+    let user = await User.findOneAndUpdate(
+      { email: email },
+      { 
+        $set: { 
+          googleId: sub, 
+          name: name, 
+          avatar: picture 
+        } 
+      },
+      { new: true, upsert: true }
+    );
 
-    res.json({ success: true, user });
+    res.status(200).json({ success: true, user });
   } catch (error) {
-    console.error('[Auth] Error syncing user:', error);
-    res.status(500).json({ error: 'Internal server error during user sync.' });
+    console.error('[Auth] Google OAuth validation error:', error.message);
+    res.status(401).json({ success: false, error: 'Invalid token validation handshake' });
   }
 });
 
