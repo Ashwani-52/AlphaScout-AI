@@ -281,8 +281,7 @@ export default function App() {
       {/* Main Viewport Content Chassis */}
       <main className={`content-chassis ${hasSearched ? '' : 'landing-chassis'}`}>
         {!hasSearched ? (
-          /* INITIAL LANDING PAGE VIEW - perfectly centers content horizontally and vertically */
-          <div className="flex flex-col items-center justify-center w-full gap-y-8 text-center">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl px-4 flex flex-col items-center justify-center text-center gap-y-8">
 
             <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 leading-tight m-0">
               Your next-level <br />
