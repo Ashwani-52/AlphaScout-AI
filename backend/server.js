@@ -8,6 +8,7 @@ import chatRoute, { cacheReportForChat } from './src/routes/chat.js';
 import sectorsRoute from './src/routes/sectors.js';
 import marketRoute from './src/routes/market.js';
 import { WebSocketServer } from 'ws';
+import { connectDB } from './src/config/db.js';
 
 // Bypass SSL verification globally in development to prevent corporate SSL inspection/Zscaler proxies from breaking fetches
 if (process.env.NODE_ENV !== 'production') {
@@ -17,6 +18,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Establish database connection
+connectDB();
 
 app.use(cors({
   origin: ['http://localhost:5173', 'https://alpha-scout-ai.vercel.app'],
