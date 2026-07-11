@@ -181,10 +181,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="text-xs bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full border border-emerald-200/60 font-medium">
-            Agentic Stream Ready
-          </div>
-          
           {user ? (
             <div 
               onClick={(e) => {
