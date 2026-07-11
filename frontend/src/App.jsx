@@ -19,6 +19,12 @@ export default function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [shakeLoginButton, setShakeLoginButton] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Google Login Custom Profile Form State
+  const [loginView, setLoginView] = useState('list'); // 'list' | 'custom'
+  const [customName, setCustomName] = useState('');
+  const [customEmail, setCustomEmail] = useState('');
   
   // Search History State
   const [searchHistory, setSearchHistory] = useState(() => {
@@ -38,6 +44,17 @@ export default function App() {
       setSearchHistory([]);
     }
   }, [user]);
+
+  // Click outside profile dropdown to close it
+  useEffect(() => {
+    const handleDocumentClick = () => {
+      setShowDropdown(false);
+    };
+    document.addEventListener('click', handleDocumentClick);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
 
   const triggerLoginWarning = () => {
     setShowLoginPrompt(true);
@@ -110,6 +127,9 @@ export default function App() {
   };
 
   const handleSignIn = () => {
+    setLoginView('list');
+    setCustomName('');
+    setCustomEmail('');
     setShowLoginModal(true);
   };
 
@@ -118,6 +138,19 @@ export default function App() {
     setUser(selectedUser);
     setShowLoginModal(false);
     setShowLoginPrompt(false);
+  };
+
+  const handleCustomSignInSubmit = (e) => {
+    e.preventDefault();
+    if (!customName.trim() || !customEmail.trim()) return;
+
+    // Simulate Google account profile creation
+    const simulatedProfile = {
+      name: customName.trim(),
+      email: customEmail.trim(),
+      photoURL: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80`
+    };
+    completeSignIn(simulatedProfile);
   };
 
   const handleSignOut = () => {
@@ -170,7 +203,13 @@ export default function App() {
           </div>
           
           {user ? (
-            <div className="flex items-center gap-3 relative group cursor-pointer">
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDropdown(!showDropdown);
+              }}
+              className="flex items-center gap-3 relative cursor-pointer select-none"
+            >
               <div className="flex flex-col items-end">
                 <span className="text-xs font-semibold text-slate-800">{user.name}</span>
                 <span className="text-[10px] text-slate-400">{user.email}</span>
@@ -180,15 +219,25 @@ export default function App() {
                 alt={user.name} 
                 className="w-8 h-8 rounded-full border border-slate-200 shadow-sm"
               />
-              {/* Dropdown Menu on hover */}
-              <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-slate-100 rounded-xl shadow-lg opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 p-1">
-                <button 
-                  onClick={handleSignOut} 
-                  className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+              
+              {/* Dropdown Menu - explicit click state triggers layout inclusion */}
+              {showDropdown && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-full mt-2 w-32 bg-white border border-slate-100 rounded-xl shadow-lg z-50 p-1 animate-modal-pop"
                 >
-                  Sign Out
-                </button>
-              </div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSignOut();
+                      setShowDropdown(false);
+                    }} 
+                    className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button 
@@ -334,6 +383,16 @@ export default function App() {
               ✕
             </button>
 
+            {/* Back button (Only in Custom Account Form view) */}
+            {loginView === 'custom' && (
+              <button 
+                onClick={() => setLoginView('list')}
+                className="absolute top-4 left-4 text-slate-400 hover:text-slate-600 font-bold cursor-pointer text-sm"
+              >
+                ← Back
+              </button>
+            )}
+
             {/* Google Logo */}
             <div className="flex justify-center mb-6">
               <svg className="w-10 h-10" viewBox="0 0 24 24">
@@ -344,27 +403,74 @@ export default function App() {
               </svg>
             </div>
 
-            <h2 className="text-xl font-bold text-slate-800 mb-2">Sign in with Google</h2>
-            <p className="text-xs text-slate-400 mb-6">Choose an account to continue to AlphaScout AI</p>
+            {loginView === 'list' ? (
+              <>
+                <h2 className="text-xl font-bold text-slate-800 mb-2">Sign in with Google</h2>
+                <p className="text-xs text-slate-400 mb-6">Choose an account to continue to AlphaScout AI</p>
 
-            <div className="flex flex-col gap-3">
-              {[
-                { name: 'Ashwani Kumar', email: 'ashwanikumar@gmail.com', photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80' },
-                { name: 'Demo Investor', email: 'investor.demo@alphascout.ai', photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&q=80' }
-              ].map((profile, i) => (
-                <div 
-                  key={i}
-                  onClick={() => completeSignIn(profile)}
-                  className="flex items-center gap-3 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/40 p-3 rounded-2xl cursor-pointer text-left transition-all duration-200"
-                >
-                  <img src={profile.photoURL} alt={profile.name} className="w-10 h-10 rounded-full border border-slate-100" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-700">{profile.name}</span>
-                    <span className="text-xs text-slate-400">{profile.email}</span>
-                  </div>
+                <div className="flex flex-col gap-3">
+                  {[
+                    { name: 'Ashwani Kumar', email: 'ashwanikumar@gmail.com', photoURL: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&q=80' },
+                    { name: 'Demo Investor', email: 'investor.demo@alphascout.ai', photoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&q=80' }
+                  ].map((profile, i) => (
+                    <div 
+                      key={i}
+                      onClick={() => completeSignIn(profile)}
+                      className="flex items-center gap-3 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/40 p-3 rounded-2xl cursor-pointer text-left transition-all duration-200"
+                    >
+                      <img src={profile.photoURL} alt={profile.name} className="w-10 h-10 rounded-full border border-slate-100" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-slate-700">{profile.name}</span>
+                        <span className="text-xs text-slate-400">{profile.email}</span>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button 
+                    onClick={() => setLoginView('custom')}
+                    className="mt-2 flex items-center justify-center gap-2 border border-dashed border-slate-200 hover:border-blue-300 hover:bg-blue-50/20 p-3 rounded-2xl cursor-pointer text-xs font-bold text-slate-500 hover:text-blue-600 transition-all duration-200 w-full"
+                  >
+                    👤 Use another account
+                  </button>
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <form onSubmit={handleCustomSignInSubmit} className="text-left">
+                <h2 className="text-xl font-bold text-slate-800 mb-2 text-center">Use another account</h2>
+                <p className="text-xs text-slate-400 mb-6 text-center">Sign in using a custom developer identity</p>
+
+                <div className="mb-4">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Display Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="Enter your name"
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email"
+                    value={customEmail}
+                    onChange={(e) => setCustomEmail(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 transition-all"
+                  />
+                </div>
+
+                <button 
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-center cursor-pointer"
+                >
+                  Sign In
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
