@@ -21,6 +21,7 @@ export default function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [shakeLoginButton, setShakeLoginButton] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   
   // Search History State
   const [searchHistory, setSearchHistory] = useState(() => {
@@ -41,10 +42,11 @@ export default function App() {
     }
   }, [user]);
 
-  // Click outside profile dropdown to close it
+  // Click outside profile dropdown & history to close them
   useEffect(() => {
     const handleDocumentClick = () => {
       setShowDropdown(false);
+      setShowHistory(false);
     };
     document.addEventListener('click', handleDocumentClick);
     return () => {
@@ -181,7 +183,7 @@ export default function App() {
         </div>
 
         {/* Top Right Profile & Persistent History Column Stack */}
-        <div className="flex flex-col items-end gap-3 z-20">
+        <div className="flex flex-col items-end gap-2 z-20">
           {user ? (
             <div 
               onClick={(e) => {
@@ -230,24 +232,45 @@ export default function App() {
             </div>
           )}
 
-          {/* Persistent Vertical Search History List (strictly beneath profile card) */}
+          {/* Persistent History Toggle Button & Floating Dropdown List */}
           {user && searchHistory.length > 0 && (
-            <div className="flex flex-col items-end gap-1.5 mt-1 pt-1.5 border-t border-slate-100 w-full animate-fade-in">
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Recents</span>
-              <div className="flex flex-col items-end gap-1.5 max-h-[160px] overflow-y-auto pr-0.5">
-                {searchHistory.map((hist, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => {
-                      setTicker(hist);
-                      triggerAnalysis(null, hist);
-                    }}
-                    className="text-[11px] bg-white hover:bg-blue-50 hover:text-blue-600 border border-slate-200 text-slate-600 px-3 py-1 rounded-full transition-all duration-200 font-semibold cursor-pointer shadow-sm w-max hover:shadow"
-                  >
-                    {hist}
-                  </button>
-                ))}
-              </div>
+            <div className="relative mt-1.5">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowHistory(!showHistory);
+                }}
+                className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-blue-600 shadow-sm transition-all duration-200 cursor-pointer"
+                title="Recent searches"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+
+              {showHistory && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl z-[9999] p-3 animate-modal-pop text-left flex flex-col gap-1.5"
+                >
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Recent Searches</span>
+                  <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto pr-0.5">
+                    {searchHistory.map((hist, idx) => (
+                      <button 
+                        key={idx}
+                        onClick={() => {
+                          setTicker(hist);
+                          triggerAnalysis(null, hist);
+                          setShowHistory(false);
+                        }}
+                        className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-xl transition-all duration-200 font-semibold cursor-pointer w-full text-left"
+                      >
+                        🔍 {hist}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -259,14 +282,14 @@ export default function App() {
           /* INITIAL LANDING PAGE VIEW */
           <div className="flex flex-col items-center text-center">
 
-            <h1 className="text-5xl md:text-6xl font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-4 leading-tight">
               Your next-level <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                 investment research
               </span> engine.
             </h1>
 
-            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-8 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
+            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-4 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
               <input 
                 type="text" 
                 placeholder="Enter Stock Ticker (e.g. WIPRO.NS)"
@@ -296,9 +319,9 @@ export default function App() {
             </form>
 
             {/* Live Thought Process Steps Display */}
-            <div className="w-full text-left max-w-xl space-y-4 mt-8 mb-8">
+            <div className="w-full text-left max-w-xl space-y-3 mt-4 mb-4">
               {steps.map((step, index) => (
-                <div key={index} className="flex items-center gap-3 bg-white/80 border border-slate-200/60 px-5 py-3.5 rounded-2xl shadow-sm animate-fade-in">
+                <div key={index} className="flex items-center gap-3 bg-white/80 border border-slate-200/60 px-5 py-3 rounded-2xl shadow-sm animate-fade-in">
                   {index === steps.length - 1 && loading ? (
                     <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                   ) : (

@@ -517,7 +517,7 @@
 .dashboard-container {
   width: 100%;
   max-width: 1340px; /* Expands to utilize the empty spaces on the sides */
-  margin: 44px auto;
+  margin: 16px auto;
   padding: 0 24px;
   box-sizing: border-box;
 }
@@ -1888,6 +1888,9 @@
       rgba(255, 255, 255, 0) 100%
     ),
     linear-gradient(to right, #0ed2da, #5f29c7);
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 /* Vertical grid strip lines generation */
@@ -1923,6 +1926,11 @@
   content: none !important;
 }
 
+.app-canvas-container.has-searched .content-chassis {
+  padding-top: 10px;
+  padding-bottom: 24px;
+}
+
 /* Ensure content renders cleanly over your background grid alignment layer */
 .content-chassis {
   position: relative;
@@ -1938,9 +1946,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 100px);
+  height: calc(100vh - 120px);
+  min-height: 0;
   box-sizing: border-box;
-  padding-bottom: 120px;
+  padding-bottom: 80px;
 }
 
 /* Simple helper layout animation for your incoming dashboard blocks */
