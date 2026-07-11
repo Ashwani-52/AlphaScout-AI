@@ -1946,10 +1946,10 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 100px);
   min-height: 0;
   box-sizing: border-box;
-  padding-bottom: 80px;
+  padding: 0 24px;
 }
 
 /* Simple helper layout animation for your incoming dashboard blocks */
