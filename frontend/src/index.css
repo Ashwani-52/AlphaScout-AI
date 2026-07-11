@@ -1789,7 +1789,17 @@
 
 @media (max-width: 1024px) {
   .dashboard-grid-layout {
-    grid-template-columns: 1fr !important; /* Stack watchlist, charts, and sidebar vertically */
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .dashboard-main-column {
+    order: 1 !important;
+  }
+  .dashboard-sidebar-column {
+    order: 2 !important;
+  }
+  .dashboard-left-column {
+    order: 3 !important;
   }
 }
 
