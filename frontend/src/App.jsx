@@ -169,8 +169,8 @@ export default function App() {
       )}
 
       {/* Header Container Layout */}
-      <header className="w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-center z-10">
-        <div className="flex items-center gap-2">
+      <header className="w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-start z-10">
+        <div className="flex items-center gap-2 pt-2">
           <div 
             onClick={() => { setAnalysis(null); setSteps([]); setTicker(''); }}
             className="flex items-center gap-2 cursor-pointer"
@@ -180,7 +180,8 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        {/* Top Right Profile & Persistent History Column Stack */}
+        <div className="flex flex-col items-end gap-3 z-20">
           {user ? (
             <div 
               onClick={(e) => {
@@ -228,6 +229,27 @@ export default function App() {
               />
             </div>
           )}
+
+          {/* Persistent Vertical Search History List (strictly beneath profile card) */}
+          {user && searchHistory.length > 0 && (
+            <div className="flex flex-col items-end gap-1.5 mt-1 pt-1.5 border-t border-slate-100 w-full animate-fade-in">
+              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Recents</span>
+              <div className="flex flex-col items-end gap-1.5 max-h-[160px] overflow-y-auto pr-0.5">
+                {searchHistory.map((hist, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => {
+                      setTicker(hist);
+                      triggerAnalysis(null, hist);
+                    }}
+                    className="text-[11px] bg-white hover:bg-blue-50 hover:text-blue-600 border border-slate-200 text-slate-600 px-3 py-1 rounded-full transition-all duration-200 font-semibold cursor-pointer shadow-sm w-max hover:shadow"
+                  >
+                    {hist}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -244,7 +266,7 @@ export default function App() {
               </span> engine.
             </h1>
 
-            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-2 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
+            <form onSubmit={triggerAnalysis} className="w-full max-w-xl flex flex-col sm:flex-row gap-4 items-center justify-between mb-8 bg-white p-2.5 rounded-[38px] border border-slate-200 shadow-md">
               <input 
                 type="text" 
                 placeholder="Enter Stock Ticker (e.g. WIPRO.NS)"
@@ -273,25 +295,6 @@ export default function App() {
               </div>
             </form>
 
-            {/* Search History Trail Block */}
-            {user && searchHistory.length > 0 && (
-              <div className="w-full max-w-xl text-left mt-3 px-2 flex flex-wrap items-center gap-2 animate-fade-in">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recent Searches:</span>
-                {searchHistory.map((hist, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => {
-                      setTicker(hist);
-                      triggerAnalysis(null, hist);
-                    }}
-                    className="text-xs bg-slate-100 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-full transition-all duration-200 font-medium cursor-pointer"
-                  >
-                    {hist}
-                  </button>
-                ))}
-              </div>
-            )}
-
             {/* Live Thought Process Steps Display */}
             <div className="w-full text-left max-w-xl space-y-4 mt-8 mb-8">
               {steps.map((step, index) => (
@@ -316,12 +319,15 @@ export default function App() {
           /* ACTIVE WHITE DASHBOARD VIEW */
           <div className="dashboard-grid-fadein">
             <div className="flex justify-between items-center mb-6">
+              {/* Minimalist Icon-Only Back Button */}
               <button 
-                className="back-debug-btn" 
+                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shadow-sm transition-all duration-200 cursor-pointer" 
                 onClick={() => { setAnalysis(null); setSteps([]); setTicker(''); }}
-                style={{ margin: 0 }}
+                title="Go back to search"
               >
-                ← Search Another Asset
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
               </button>
             </div>
             
