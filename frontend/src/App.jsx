@@ -172,7 +172,9 @@ export default function App() {
 
       {/* Header Container Layout */}
       <header className="w-full max-w-[1560px] mx-auto px-6 py-6 flex justify-between items-start z-10">
-        <div className="flex items-center gap-2 pt-2">
+        
+        {/* Top Left Profile & Persistent History Column Stack */}
+        <div className="flex flex-col items-start gap-2 pt-2 z-20">
           <div 
             onClick={() => { setAnalysis(null); setSteps([]); setTicker(''); }}
             className="flex items-center gap-2 cursor-pointer"
@@ -180,9 +182,51 @@ export default function App() {
             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 animate-pulse"></div>
             <span className="font-semibold text-lg text-slate-800">AlphaScout AI</span>
           </div>
+
+          {/* Persistent History Toggle Button & Floating Dropdown List (strictly beneath brand logo) */}
+          {user && searchHistory.length > 0 && (
+            <div className="relative mt-1.5">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowHistory(!showHistory);
+                }}
+                className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-blue-600 shadow-sm transition-all duration-200 cursor-pointer"
+                title="Recent searches"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+
+              {showHistory && (
+                <div 
+                  onClick={(e) => e.stopPropagation()}
+                  className="absolute left-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl z-[9999] p-3 animate-modal-pop text-left flex flex-col gap-1.5"
+                >
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Recent Searches</span>
+                  <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto pr-0.5">
+                    {searchHistory.map((hist, idx) => (
+                      <button 
+                        key={idx}
+                        onClick={() => {
+                          setTicker(hist);
+                          triggerAnalysis(null, hist);
+                          setShowHistory(false);
+                        }}
+                        className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-xl transition-all duration-200 font-semibold cursor-pointer w-full text-left"
+                      >
+                        🔍 {hist}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Top Right Profile & Persistent History Column Stack */}
+        {/* Top Right Profile Details */}
         <div className="flex flex-col items-end gap-2 z-20">
           {user ? (
             <div 
@@ -229,48 +273,6 @@ export default function App() {
                 prompt="select_account"
                 useOneTap={false}
               />
-            </div>
-          )}
-
-          {/* Persistent History Toggle Button & Floating Dropdown List */}
-          {user && searchHistory.length > 0 && (
-            <div className="relative mt-1.5">
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowHistory(!showHistory);
-                }}
-                className="flex items-center justify-center w-8 h-8 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-blue-600 shadow-sm transition-all duration-200 cursor-pointer"
-                title="Recent searches"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-
-              {showHistory && (
-                <div 
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl z-[9999] p-3 animate-modal-pop text-left flex flex-col gap-1.5"
-                >
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 block">Recent Searches</span>
-                  <div className="flex flex-col gap-1 max-h-[160px] overflow-y-auto pr-0.5">
-                    {searchHistory.map((hist, idx) => (
-                      <button 
-                        key={idx}
-                        onClick={() => {
-                          setTicker(hist);
-                          triggerAnalysis(null, hist);
-                          setShowHistory(false);
-                        }}
-                        className="text-xs bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-100 text-slate-600 px-3 py-1.5 rounded-xl transition-all duration-200 font-semibold cursor-pointer w-full text-left"
-                      >
-                        🔍 {hist}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -341,19 +343,6 @@ export default function App() {
         ) : (
           /* ACTIVE WHITE DASHBOARD VIEW */
           <div className="dashboard-grid-fadein">
-            <div className="flex justify-between items-center mb-6">
-              {/* Minimalist Icon-Only Back Button */}
-              <button 
-                className="flex items-center justify-center w-10 h-10 rounded-full border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 shadow-sm transition-all duration-200 cursor-pointer" 
-                onClick={() => { setAnalysis(null); setSteps([]); setTicker(''); }}
-                title="Go back to search"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </button>
-            </div>
-            
             <Briefing result={analysis} />
           </div>
         )}
