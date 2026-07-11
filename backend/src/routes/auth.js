@@ -3,7 +3,7 @@ import User from '../models/User.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
-const client = new OAuth2Client();
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 router.post('/google-login', async (req, res) => {
   const { token } = req.body;
@@ -13,14 +13,9 @@ router.post('/google-login', async (req, res) => {
   }
 
   try {
-    const audienceList = ['479408016024-2plbp1crir3itgpsp77ni47c0kik96rd.apps.googleusercontent.com'];
-    if (process.env.GOOGLE_CLIENT_ID && !audienceList.includes(process.env.GOOGLE_CLIENT_ID)) {
-      audienceList.push(process.env.GOOGLE_CLIENT_ID);
-    }
-
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: audienceList,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
     const payload = ticket.getPayload();
     const { sub, name, email, picture } = payload;
