@@ -11,7 +11,6 @@ export async function connectDB() {
     await mongoose.connect(mongoURI);
     console.log('🔌 [DB] MongoDB Atlas connection established successfully.');
   } catch (error) {
-    console.error('❌ [DB] MongoDB Atlas connection failed:', error.message);
-    process.exit(1);
+    console.error('❌ [DB] MongoDB Atlas connection failed (server will remain running):', error.message);
   }
 }
