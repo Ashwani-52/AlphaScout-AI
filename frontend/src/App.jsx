@@ -284,7 +284,7 @@ export default function App() {
           /* INITIAL LANDING PAGE VIEW */
           <div className="flex flex-col items-center text-center">
 
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-4 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-slate-900 mb-6 leading-tight">
               Your next-level <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                 investment research

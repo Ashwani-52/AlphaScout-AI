@@ -1949,7 +1949,7 @@
   height: calc(100vh - 100px);
   min-height: 0;
   box-sizing: border-box;
-  padding: 0 24px 60px 24px;
+  padding: 0 24px 100px 24px;
 }
 
 /* Simple helper layout animation for your incoming dashboard blocks */
