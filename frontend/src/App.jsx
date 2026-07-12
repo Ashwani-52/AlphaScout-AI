@@ -147,7 +147,7 @@ export default function App() {
         setShowLoginModal(false);
         setError('');
       } else {
-        setError('Token validation handshake rejected by backend.');
+        setError(data.error || 'Token validation handshake rejected by backend.');
       }
     } catch (err) {
       console.error('Authentication handshake rejected by backend:', err);

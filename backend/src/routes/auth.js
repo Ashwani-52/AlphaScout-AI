@@ -3,7 +3,8 @@ import User from '../models/User.js';
 import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID.trim() : '';
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 router.post('/google-login', async (req, res) => {
   const { token } = req.body;
@@ -14,12 +15,26 @@ router.post('/google-login', async (req, res) => {
 
   try {
     console.log("=== BACKEND OAUTH HANDSHAKE ===");
-    console.log("Configured GOOGLE_CLIENT_ID on Render:", `"${process.env.GOOGLE_CLIENT_ID?.substring(0, 15)}..."`);
+    console.log("Configured GOOGLE_CLIENT_ID on Render (raw):", `"${process.env.GOOGLE_CLIENT_ID}"`);
+    console.log("Configured GOOGLE_CLIENT_ID on Render (trimmed):", `"${GOOGLE_CLIENT_ID}"`);
+
+    // Parse the token payload natively to inspect the audience (aud) and issuer (iss)
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payloadDecoded = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+        console.log("Token payload audience (aud):", `"${payloadDecoded.aud}"`);
+        console.log("Token payload issuer (iss):", `"${payloadDecoded.iss}"`);
+        console.log("Token payload email:", `"${payloadDecoded.email}"`);
+      }
+    } catch (e) {
+      console.warn("Failed to parse token payload for debugging:", e.message);
+    }
 
     // Google's native library automatically decodes, verifies signature, AND checks the client ID target (audience)
-    // Leaving audience open allows any valid token signed by Google to be verified, bypassing dashboard string mismatches safely
     const ticket = await client.verifyIdToken({
       idToken: token,
+      audience: GOOGLE_CLIENT_ID || undefined,
     });
     
     const payload = ticket.getPayload();
