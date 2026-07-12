@@ -121,6 +121,9 @@ export default function App() {
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
+    console.log("=== OAUTH DEBUG ===");
+    console.log("Frontend active VITE_GOOGLE_CLIENT_ID:", import.meta.env.VITE_GOOGLE_CLIENT_ID);
+
     try {
       // Send OIDC JWT token to backend for verification and DB upsert
       const res = await fetch(`${backendUrl}/api/auth/google-login`, {
@@ -147,7 +150,7 @@ export default function App() {
         setError('Token validation handshake rejected by backend.');
       }
     } catch (err) {
-      console.error('Failed to parse Google OAuth credential:', err);
+      console.error('Authentication handshake rejected by backend:', err);
       setError('Authentication failed. Could not verify Google profile with server.');
     }
   };
